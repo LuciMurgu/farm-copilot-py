@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-03 (Prompt 3 — domain foundations: money, entities, enums, primitives + 34 tests)
+2026-04-03 (Prompt 4 — domain benchmark comparison + 60 tests total)
 
 ---
 
@@ -49,7 +49,8 @@ Update this file at the end of every meaningful session.
 | Domain primitives (4 NewType aliases) | `domain/primitives.py` — UUID, DecimalValue, IsoDateString, IsoTimestampString |
 | Domain entities (8 frozen dataclasses) | `domain/entities.py` — Farm, Supplier, Invoice, InvoiceLineItem, etc. |
 | Money arithmetic (12 helpers) | `domain/money.py` — Decimal-based, no external deps |
-| Domain tests | `tests/domain/test_money.py` — 34 tests, all passing |
+| Benchmark comparison | `domain/benchmark_comparison.py` — coverage tiers, median pricing, deviation calc |
+| Domain tests | `tests/domain/` — 60 tests (34 money + 26 benchmark), all passing |
 
 ---
 

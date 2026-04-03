@@ -1,5 +1,21 @@
 """Domain layer barrel exports."""
 
+from .benchmark_comparison import (
+    BenchmarkComparisonSummary,
+    BenchmarkLineInput,
+    BenchmarkObservationInput,
+    ComparableBasis,
+    ComparisonAvailable,
+    NoCanonicalProduct,
+    NoComparableBasis,
+    NoObservationsFound,
+    NotBenchmarkEligible,
+    derive_coverage_tier,
+    filter_comparable_observations,
+    resolve_benchmark_comparison,
+    resolve_invoice_benchmark_comparison,
+    summarize_benchmark_results,
+)
 from .entities import (
     CanonicalProduct,
     Farm,
@@ -67,4 +83,19 @@ __all__ = [
     "exceeds",
     "median",
     "deviation_percent",
+    # Benchmark Comparison
+    "BenchmarkObservationInput",
+    "BenchmarkLineInput",
+    "NotBenchmarkEligible",
+    "NoCanonicalProduct",
+    "NoComparableBasis",
+    "NoObservationsFound",
+    "ComparableBasis",
+    "ComparisonAvailable",
+    "BenchmarkComparisonSummary",
+    "resolve_benchmark_comparison",
+    "resolve_invoice_benchmark_comparison",
+    "filter_comparable_observations",
+    "derive_coverage_tier",
+    "summarize_benchmark_results",
 ]
