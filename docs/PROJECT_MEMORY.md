@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-03 (Prompt 7 — domain line classification + exact normalization + 132 tests total)
+2026-04-03 (Prompt 8 — domain stock-in derivation + 149 tests total)
 
 ---
 
@@ -54,7 +54,8 @@ Update this file at the end of every meaningful session.
 | Duplicate suspicion | `domain/duplicate_suspicion.py` — evidence hierarchy, invoice number normalization |
 | Line classification | `domain/line_classification.py` — keyword-based RO+EN patterns, priority ordering |
 | Exact normalization | `domain/exact_normalization.py` — 4-tier alias precedence, winner/ambiguous resolution |
-| Domain tests | `tests/domain/` — 132 tests, all passing |
+| Stock-in derivation | `domain/stock_in_derivation.py` — validation gate, eligibility checks, 6 skip reasons |
+| Domain tests | `tests/domain/` — 149 tests, all passing |
 
 ---
 

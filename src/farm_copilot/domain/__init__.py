@@ -86,6 +86,16 @@ from .money import (
     to_decimal,
 )
 from .primitives import UUID, DecimalValue, IsoDateString, IsoTimestampString
+from .stock_in_derivation import (
+    StockInCounts,
+    StockInDerivationResult,
+    StockInEligible,
+    StockInLineInput,
+    StockInSkip,
+    StockInValidationGate,
+    derive_invoice_stock_in,
+    derive_stock_in_outcome,
+)
 
 __all__ = [
     # Entities
@@ -170,4 +180,13 @@ __all__ = [
     "NormalizationWinner",
     "NormalizationAmbiguous",
     "resolve_exact_normalization_winner",
+    # Stock-In Derivation
+    "StockInLineInput",
+    "StockInValidationGate",
+    "StockInEligible",
+    "StockInSkip",
+    "StockInCounts",
+    "StockInDerivationResult",
+    "derive_stock_in_outcome",
+    "derive_invoice_stock_in",
 ]
