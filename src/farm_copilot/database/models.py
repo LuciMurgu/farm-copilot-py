@@ -1,0 +1,480 @@
+"""SQLAlchemy 2.0 models — faithful port of the TypeScript/Drizzle schema.
+
+10 tables, 6 enums.  All tables use UUID primary keys and timestamptz.
+Decimal columns follow the project convention:
+  - Money (totals): Numeric(15, 2)
+  - Quantities / prices: Numeric(15, 4)
+  - Confidence: Numeric(4, 3)
+"""
+
+from __future__ import annotations
+
+import enum
+import uuid
+from datetime import date, datetime
+from decimal import Decimal
+
+from sqlalchemy import (
+    Boolean,
+    Date,
+    Enum,
+    ForeignKey,
+    ForeignKeyConstraint,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
+from sqlalchemy.dialects.postgresql import JSON, TIMESTAMP, UUID
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+# ---------------------------------------------------------------------------
+# Enums
+# ---------------------------------------------------------------------------
+
+
+class SourceType(enum.StrEnum):
+    PDF = "pdf"
+    IMAGE = "image"
+    XML = "xml"
+
+
+class InvoiceStatus(enum.StrEnum):
+    UPLOADED = "uploaded"
+    PROCESSING = "processing"
+    NEEDS_REVIEW = "needs_review"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+class LineClassification(enum.StrEnum):
+    STOCKABLE_INPUT = "stockable_input"
+    NON_STOCKABLE_CHARGE = "non_stockable_charge"
+    SERVICE = "service"
+    DISCOUNT_ADJUSTMENT = "discount_adjustment"
+
+
+class BenchmarkSourceKind(enum.StrEnum):
+    INVOICE = "invoice"
+    QUOTE = "quote"
+    MANUAL_ENTRY = "manual_entry"
+    TRUSTED_FEED = "trusted_feed"
+
+
+class StockMovementDirection(enum.StrEnum):
+    IN = "in"
+    OUT = "out"
+    ADJUSTMENT = "adjustment"
+
+
+class CorrectionKind(enum.StrEnum):
+    CANONICAL_PRODUCT_REASSIGNMENT = "canonical_product_reassignment"
+
+
+# ---------------------------------------------------------------------------
+# Base
+# ---------------------------------------------------------------------------
+
+
+class Base(DeclarativeBase):
+    """Shared declarative base for all models."""
+
+    type_annotation_map = {
+        uuid.UUID: UUID(as_uuid=True),
+        Decimal: Numeric(15, 2),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Helper columns
+# ---------------------------------------------------------------------------
+
+def _uuid_pk() -> Mapped[uuid.UUID]:
+    return mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        server_default=func.gen_random_uuid(),
+    )
+
+
+def _created_at() -> Mapped[datetime]:
+    return mapped_column(
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )
+
+
+def _updated_at() -> Mapped[datetime]:
+    return mapped_column(
+        TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+    )
+
+
+# ---------------------------------------------------------------------------
+# 1. farms
+# ---------------------------------------------------------------------------
+
+
+class Farm(Base):
+    __tablename__ = "farms"
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+
+    # relationships
+    suppliers: Mapped[list[Supplier]] = relationship(back_populates="farm")
+    documents: Mapped[list[UploadedDocument]] = relationship(back_populates="farm")
+    invoices: Mapped[list[Invoice]] = relationship(back_populates="farm")
+
+
+# ---------------------------------------------------------------------------
+# 2. suppliers
+# ---------------------------------------------------------------------------
+
+
+class Supplier(Base):
+    __tablename__ = "suppliers"
+    __table_args__ = (
+        UniqueConstraint("id", "farm_id", name="uq_suppliers_id_farm_id"),
+        Index("ix_suppliers_farm_id", "farm_id"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    tax_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+
+    farm: Mapped[Farm] = relationship(back_populates="suppliers")
+
+
+# ---------------------------------------------------------------------------
+# 3. uploaded_documents
+# ---------------------------------------------------------------------------
+
+
+class UploadedDocument(Base):
+    __tablename__ = "uploaded_documents"
+    __table_args__ = (
+        UniqueConstraint("id", "farm_id", name="uq_uploaded_documents_id_farm_id"),
+        Index("ix_uploaded_documents_farm_id", "farm_id"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    source_type: Mapped[SourceType] = mapped_column(
+        Enum(SourceType, name="source_type", create_constraint=True),
+        nullable=False,
+    )
+    original_filename: Mapped[str | None] = mapped_column(String, nullable=True)
+    storage_path: Mapped[str] = mapped_column(String, nullable=False)
+    file_size_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    mime_type: Mapped[str | None] = mapped_column(String, nullable=True)
+    uploaded_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    farm: Mapped[Farm] = relationship(back_populates="documents")
+
+
+# ---------------------------------------------------------------------------
+# 4. invoices
+# ---------------------------------------------------------------------------
+
+
+class Invoice(Base):
+    __tablename__ = "invoices"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["uploaded_document_id", "farm_id"],
+            ["uploaded_documents.id", "uploaded_documents.farm_id"],
+            name="fk_invoices_uploaded_document",
+        ),
+        ForeignKeyConstraint(
+            ["supplier_id", "farm_id"],
+            ["suppliers.id", "suppliers.farm_id"],
+            name="fk_invoices_supplier",
+        ),
+        UniqueConstraint("uploaded_document_id", name="uq_invoices_uploaded_document_id"),
+        Index("ix_invoices_farm_id", "farm_id"),
+        Index("ix_invoices_supplier_id", "supplier_id"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    uploaded_document_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False
+    )
+    supplier_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True
+    )
+    status: Mapped[InvoiceStatus] = mapped_column(
+        Enum(InvoiceStatus, name="invoice_status", create_constraint=True),
+        nullable=False,
+        server_default=InvoiceStatus.UPLOADED.value,
+    )
+    invoice_number: Mapped[str | None] = mapped_column(String, nullable=True)
+    invoice_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    due_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    currency: Mapped[str] = mapped_column(String, nullable=False, server_default="RON")
+    subtotal_amount: Mapped[Decimal | None] = mapped_column(
+        Numeric(15, 2), nullable=True
+    )
+    tax_amount: Mapped[Decimal | None] = mapped_column(
+        Numeric(15, 2), nullable=True
+    )
+    total_amount: Mapped[Decimal | None] = mapped_column(
+        Numeric(15, 2), nullable=True
+    )
+    raw_extraction_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # type: ignore[type-arg]
+    extraction_method: Mapped[str | None] = mapped_column(String, nullable=True)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+
+    farm: Mapped[Farm] = relationship(back_populates="invoices")
+    line_items: Mapped[list[InvoiceLineItem]] = relationship(back_populates="invoice")
+
+
+# ---------------------------------------------------------------------------
+# 5. canonical_products  (GLOBAL — no farm_id)
+# ---------------------------------------------------------------------------
+
+
+class CanonicalProduct(Base):
+    __tablename__ = "canonical_products"
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
+    category: Mapped[str | None] = mapped_column(String, nullable=True)
+    default_unit: Mapped[str | None] = mapped_column(String, nullable=True)
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="true")
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+
+
+# ---------------------------------------------------------------------------
+# 6. invoice_line_items
+# ---------------------------------------------------------------------------
+
+
+class InvoiceLineItem(Base):
+    __tablename__ = "invoice_line_items"
+    __table_args__ = (
+        UniqueConstraint(
+            "invoice_id", "line_order", name="uq_invoice_line_items_invoice_id_line_order"
+        ),
+        Index("ix_invoice_line_items_invoice_id", "invoice_id"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    invoice_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoices.id"), nullable=False
+    )
+    line_order: Mapped[int] = mapped_column(Integer, nullable=False)
+    raw_description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    quantity: Mapped[Decimal | None] = mapped_column(Numeric(15, 4), nullable=True)
+    unit: Mapped[str | None] = mapped_column(String, nullable=True)
+    unit_price: Mapped[Decimal | None] = mapped_column(Numeric(15, 4), nullable=True)
+    line_total: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
+    tax_rate: Mapped[Decimal | None] = mapped_column(Numeric(5, 2), nullable=True)
+    tax_amount: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
+    line_classification: Mapped[LineClassification | None] = mapped_column(
+        Enum(LineClassification, name="line_classification", create_constraint=True),
+        nullable=True,
+    )
+    canonical_product_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("canonical_products.id"), nullable=True
+    )
+    normalization_confidence: Mapped[Decimal | None] = mapped_column(
+        Numeric(4, 3), nullable=True
+    )
+    normalization_method: Mapped[str | None] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+
+    invoice: Mapped[Invoice] = relationship(back_populates="line_items")
+    canonical_product: Mapped[CanonicalProduct | None] = relationship()
+
+
+# ---------------------------------------------------------------------------
+# 7. product_aliases
+# ---------------------------------------------------------------------------
+
+
+class ProductAlias(Base):
+    __tablename__ = "product_aliases"
+    __table_args__ = (
+        Index("ix_product_aliases_canonical_product_id", "canonical_product_id"),
+        Index("ix_product_aliases_alias_text", "alias_text"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    canonical_product_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("canonical_products.id"), nullable=False
+    )
+    alias_text: Mapped[str] = mapped_column(String, nullable=False)
+    farm_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=True
+    )
+    supplier_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("suppliers.id"), nullable=True
+    )
+    source: Mapped[str | None] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = _created_at()
+
+
+# ---------------------------------------------------------------------------
+# 8. benchmark_observations
+# ---------------------------------------------------------------------------
+
+
+class BenchmarkObservation(Base):
+    __tablename__ = "benchmark_observations"
+    __table_args__ = (
+        Index("ix_benchmark_observations_farm_id", "farm_id"),
+        Index("ix_benchmark_observations_canonical_product_id", "canonical_product_id"),
+        Index("ix_benchmark_observations_observed_at", "observed_at"),
+        Index("ix_benchmark_observations_source_kind", "source_kind"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    canonical_product_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("canonical_products.id"), nullable=False
+    )
+    source_kind: Mapped[BenchmarkSourceKind] = mapped_column(
+        Enum(BenchmarkSourceKind, name="benchmark_source_kind", create_constraint=True),
+        nullable=False,
+    )
+    invoice_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoices.id"), nullable=True
+    )
+    invoice_line_item_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoice_line_items.id"), nullable=True
+    )
+    observed_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False
+    )
+    region_county: Mapped[str | None] = mapped_column(String, nullable=True)
+    region_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    normalized_unit: Mapped[str] = mapped_column(String, nullable=False)
+    normalized_unit_price: Mapped[Decimal] = mapped_column(
+        Numeric(15, 4), nullable=False
+    )
+    currency: Mapped[str] = mapped_column(String, nullable=False, server_default="RON")
+    ex_vat: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    freight_separated: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    source_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+
+
+# ---------------------------------------------------------------------------
+# 9. stock_movements
+# ---------------------------------------------------------------------------
+
+
+class StockMovement(Base):
+    __tablename__ = "stock_movements"
+    __table_args__ = (
+        UniqueConstraint(
+            "farm_id", "idempotency_key", name="uq_stock_movements_farm_id_idempotency_key"
+        ),
+        Index("ix_stock_movements_farm_id", "farm_id"),
+        Index("ix_stock_movements_canonical_product_id", "canonical_product_id"),
+        Index("ix_stock_movements_invoice_id", "invoice_id"),
+        Index("ix_stock_movements_effective_at", "effective_at"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    canonical_product_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("canonical_products.id"), nullable=False
+    )
+    direction: Mapped[StockMovementDirection] = mapped_column(
+        Enum(StockMovementDirection, name="stock_movement_direction", create_constraint=True),
+        nullable=False,
+    )
+    quantity: Mapped[Decimal] = mapped_column(Numeric(15, 4), nullable=False)
+    unit: Mapped[str] = mapped_column(String, nullable=False)
+    invoice_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoices.id"), nullable=True
+    )
+    invoice_line_item_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoice_line_items.id"), nullable=True
+    )
+    idempotency_key: Mapped[str] = mapped_column(String, nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    effective_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False
+    )
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+
+
+# ---------------------------------------------------------------------------
+# 10. line_corrections
+# ---------------------------------------------------------------------------
+
+
+class LineCorrection(Base):
+    __tablename__ = "line_corrections"
+    __table_args__ = (
+        Index("ix_line_corrections_farm_id", "farm_id"),
+        Index("ix_line_corrections_invoice_id", "invoice_id"),
+        Index("ix_line_corrections_invoice_line_item_id", "invoice_line_item_id"),
+        Index("ix_line_corrections_created_at", "created_at"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    invoice_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoices.id"), nullable=False
+    )
+    invoice_line_item_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoice_line_items.id"), nullable=False
+    )
+    correction_kind: Mapped[CorrectionKind] = mapped_column(
+        Enum(CorrectionKind, name="correction_kind", create_constraint=True),
+        nullable=False,
+    )
+    previous_canonical_product_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("canonical_products.id"), nullable=True
+    )
+    new_canonical_product_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("canonical_products.id"), nullable=False
+    )
+    previous_normalization_method: Mapped[str | None] = mapped_column(
+        String, nullable=True
+    )
+    previous_normalization_confidence: Mapped[Decimal | None] = mapped_column(
+        Numeric(4, 3), nullable=True
+    )
+    previous_raw_description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    actor: Mapped[str | None] = mapped_column(String, nullable=True)
+    reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = _created_at()

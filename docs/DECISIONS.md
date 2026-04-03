@@ -53,3 +53,10 @@ Copy and fill in when adding a new decision:
 - **Decision:** Ruff handles both linting and formatting. Pyright in strict mode handles type checking. Line length = 100, target Python 3.12.
 - **Reason:** Ruff is the fastest Python linter (Rust-based), replaces flake8 + isort + black. Pyright strict mode catches type errors that mypy would miss in default mode.
 - **Alternatives rejected:** flake8 + black + isort (three tools instead of one), mypy (slower, less strict by default).
+
+### DEC-0005 — Shared async engine via module-level singleton — no pool-per-request
+
+- **Date:** 2026-04-03
+- **Decision:** A single `AsyncEngine` (pool_size=5, max_overflow=10) and `async_sessionmaker` are created once at module level in `database/session.py`. FastAPI route handlers obtain sessions via a `get_db` async generator dependency. No engine or pool is created per request.
+- **Reason:** The TypeScript version suffered from a pool-per-request anti-pattern that caused connection exhaustion under load. A module-level singleton ensures one pool shared across all requests for the server lifetime.
+- **Alternatives rejected:** Per-request pool creation (proven anti-pattern), middleware-based session management (less explicit than DI).
