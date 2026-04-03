@@ -34,6 +34,19 @@ from .enums import (
     SourceType,
     StockMovementDirection,
 )
+from .invoice_validation import (
+    InvoiceValidationResult,
+    InvoiceValidationSummary,
+    RunInvoiceValidationInput,
+    ValidationInvoiceInput,
+    ValidationLineItemInput,
+    run_invoice_validation,
+    summarize_validation_results,
+    validate_abnormal_values,
+    validate_invoice_total_mismatch,
+    validate_line_total_consistency,
+    validate_suspicious_unit_price,
+)
 from .money import (
     deviation_percent,
     exceeds,
@@ -98,4 +111,16 @@ __all__ = [
     "filter_comparable_observations",
     "derive_coverage_tier",
     "summarize_benchmark_results",
+    # Invoice Validation
+    "ValidationInvoiceInput",
+    "ValidationLineItemInput",
+    "RunInvoiceValidationInput",
+    "InvoiceValidationResult",
+    "InvoiceValidationSummary",
+    "run_invoice_validation",
+    "validate_line_total_consistency",
+    "validate_invoice_total_mismatch",
+    "validate_suspicious_unit_price",
+    "validate_abnormal_values",
+    "summarize_validation_results",
 ]

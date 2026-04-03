@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-03 (Prompt 4 — domain benchmark comparison + 60 tests total)
+2026-04-03 (Prompt 5 — domain invoice validation + 84 tests total)
 
 ---
 
@@ -50,7 +50,8 @@ Update this file at the end of every meaningful session.
 | Domain entities (8 frozen dataclasses) | `domain/entities.py` — Farm, Supplier, Invoice, InvoiceLineItem, etc. |
 | Money arithmetic (12 helpers) | `domain/money.py` — Decimal-based, no external deps |
 | Benchmark comparison | `domain/benchmark_comparison.py` — coverage tiers, median pricing, deviation calc |
-| Domain tests | `tests/domain/` — 60 tests (34 money + 26 benchmark), all passing |
+| Invoice validation (4 rules) | `domain/invoice_validation.py` — line total, invoice total, suspicious price, abnormal values |
+| Domain tests | `tests/domain/` — 84 tests (34 money + 26 benchmark + 24 validation), all passing |
 
 ---
 
