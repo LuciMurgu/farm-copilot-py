@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-03 (Prompt 6 — domain duplicate suspicion + 103 tests total)
+2026-04-03 (Prompt 7 — domain line classification + exact normalization + 132 tests total)
 
 ---
 
@@ -52,7 +52,9 @@ Update this file at the end of every meaningful session.
 | Benchmark comparison | `domain/benchmark_comparison.py` — coverage tiers, median pricing, deviation calc |
 | Invoice validation (4 rules) | `domain/invoice_validation.py` — line total, invoice total, suspicious price, abnormal values |
 | Duplicate suspicion | `domain/duplicate_suspicion.py` — evidence hierarchy, invoice number normalization |
-| Domain tests | `tests/domain/` — 103 tests (34 money + 26 benchmark + 24 validation + 19 duplicate), all passing |
+| Line classification | `domain/line_classification.py` — keyword-based RO+EN patterns, priority ordering |
+| Exact normalization | `domain/exact_normalization.py` — 4-tier alias precedence, winner/ambiguous resolution |
+| Domain tests | `tests/domain/` — 132 tests, all passing |
 
 ---
 

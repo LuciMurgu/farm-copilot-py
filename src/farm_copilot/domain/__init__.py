@@ -43,6 +43,14 @@ from .enums import (
     SourceType,
     StockMovementDirection,
 )
+from .exact_normalization import (
+    ExactNormalizationCandidate,
+    NormalizationAmbiguous,
+    NormalizationNone,
+    NormalizationWinner,
+    ResolveExactNormalizationWinnerInput,
+    resolve_exact_normalization_winner,
+)
 from .invoice_validation import (
     InvoiceValidationResult,
     InvoiceValidationSummary,
@@ -55,6 +63,14 @@ from .invoice_validation import (
     validate_invoice_total_mismatch,
     validate_line_total_consistency,
     validate_suspicious_unit_price,
+)
+from .line_classification import (
+    ClassificationCounts,
+    InvoiceLineClassificationResult,
+    LineClassificationInput,
+    LineClassificationOutcome,
+    classify_invoice_line,
+    classify_invoice_lines,
 )
 from .money import (
     deviation_percent,
@@ -140,4 +156,18 @@ __all__ = [
     "normalize_invoice_number",
     "evaluate_candidate_evidence",
     "resolve_duplicate_suspicion",
+    # Line Classification
+    "LineClassificationInput",
+    "LineClassificationOutcome",
+    "ClassificationCounts",
+    "InvoiceLineClassificationResult",
+    "classify_invoice_line",
+    "classify_invoice_lines",
+    # Exact Normalization
+    "ExactNormalizationCandidate",
+    "ResolveExactNormalizationWinnerInput",
+    "NormalizationNone",
+    "NormalizationWinner",
+    "NormalizationAmbiguous",
+    "resolve_exact_normalization_winner",
 ]
