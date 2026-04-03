@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-03 (Prompt 5 — domain invoice validation + 84 tests total)
+2026-04-03 (Prompt 6 — domain duplicate suspicion + 103 tests total)
 
 ---
 
@@ -51,7 +51,8 @@ Update this file at the end of every meaningful session.
 | Money arithmetic (12 helpers) | `domain/money.py` — Decimal-based, no external deps |
 | Benchmark comparison | `domain/benchmark_comparison.py` — coverage tiers, median pricing, deviation calc |
 | Invoice validation (4 rules) | `domain/invoice_validation.py` — line total, invoice total, suspicious price, abnormal values |
-| Domain tests | `tests/domain/` — 84 tests (34 money + 26 benchmark + 24 validation), all passing |
+| Duplicate suspicion | `domain/duplicate_suspicion.py` — evidence hierarchy, invoice number normalization |
+| Domain tests | `tests/domain/` — 103 tests (34 money + 26 benchmark + 24 validation + 19 duplicate), all passing |
 
 ---
 

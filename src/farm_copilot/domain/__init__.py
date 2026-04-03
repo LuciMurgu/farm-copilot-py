@@ -16,6 +16,15 @@ from .benchmark_comparison import (
     resolve_invoice_benchmark_comparison,
     summarize_benchmark_results,
 )
+from .duplicate_suspicion import (
+    CandidateEvidence,
+    DuplicateSuspicionCandidateInput,
+    DuplicateSuspicionResult,
+    DuplicateSuspicionTargetInput,
+    evaluate_candidate_evidence,
+    normalize_invoice_number,
+    resolve_duplicate_suspicion,
+)
 from .entities import (
     CanonicalProduct,
     Farm,
@@ -123,4 +132,12 @@ __all__ = [
     "validate_suspicious_unit_price",
     "validate_abnormal_values",
     "summarize_validation_results",
+    # Duplicate Suspicion
+    "DuplicateSuspicionTargetInput",
+    "DuplicateSuspicionCandidateInput",
+    "CandidateEvidence",
+    "DuplicateSuspicionResult",
+    "normalize_invoice_number",
+    "evaluate_candidate_evidence",
+    "resolve_duplicate_suspicion",
 ]
