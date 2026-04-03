@@ -60,3 +60,10 @@ Copy and fill in when adding a new decision:
 - **Decision:** A single `AsyncEngine` (pool_size=5, max_overflow=10) and `async_sessionmaker` are created once at module level in `database/session.py`. FastAPI route handlers obtain sessions via a `get_db` async generator dependency. No engine or pool is created per request.
 - **Reason:** The TypeScript version suffered from a pool-per-request anti-pattern that caused connection exhaustion under load. A module-level singleton ensures one pool shared across all requests for the server lifetime.
 - **Alternatives rejected:** Per-request pool creation (proven anti-pattern), middleware-based session management (less explicit than DI).
+
+### DEC-0006 — Domain enums defined independently from database enums
+
+- **Date:** 2026-04-03
+- **Decision:** Domain enums (`domain/enums.py`) are defined as separate `StrEnum` classes with identical values to the database enums (`database/models.py`). The domain layer does not import from the database layer.
+- **Reason:** Preserves domain layer purity — `domain/` must have zero imports from `database/`, `contracts/`, `worker/`, or `api/`. Identical values are intentional and verified by convention.
+- **Alternatives rejected:** Shared enum module (creates coupling), importing database enums in domain (violates layer boundary).
