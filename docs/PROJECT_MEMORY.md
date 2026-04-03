@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-03 (Prompt 8 — domain stock-in derivation + 149 tests total)
+2026-04-03 (Prompt 9 — domain alert derivation + 162 tests total)
 
 ---
 
@@ -55,7 +55,8 @@ Update this file at the end of every meaningful session.
 | Line classification | `domain/line_classification.py` — keyword-based RO+EN patterns, priority ordering |
 | Exact normalization | `domain/exact_normalization.py` — 4-tier alias precedence, winner/ambiguous resolution |
 | Stock-in derivation | `domain/stock_in_derivation.py` — validation gate, eligibility checks, 6 skip reasons |
-| Domain tests | `tests/domain/` — 149 tests, all passing |
+| Alert derivation (P2 fix) | `domain/alert_derivation.py` — 4 alert types, typed evidence dataclasses, noise exclusion |
+| Domain tests | `tests/domain/` — 162 tests, all passing |
 
 ---
 

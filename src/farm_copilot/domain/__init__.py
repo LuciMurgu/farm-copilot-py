@@ -1,5 +1,18 @@
 """Domain layer barrel exports."""
 
+from .alert_derivation import (
+    AlertCounts,
+    AlertCountsByKey,
+    AlertCountsBySeverity,
+    ConfirmedDuplicateEvidence,
+    DeriveInvoiceAlertsInput,
+    InvoiceAlert,
+    InvoiceAlertsResult,
+    InvoiceTotalMismatchEvidence,
+    PossibleDuplicateEvidence,
+    SuspiciousOverpaymentEvidence,
+    derive_invoice_alerts,
+)
 from .benchmark_comparison import (
     BenchmarkComparisonSummary,
     BenchmarkLineInput,
@@ -189,4 +202,16 @@ __all__ = [
     "StockInDerivationResult",
     "derive_stock_in_outcome",
     "derive_invoice_stock_in",
+    # Alert Derivation
+    "AlertCounts",
+    "AlertCountsBySeverity",
+    "AlertCountsByKey",
+    "InvoiceAlert",
+    "InvoiceAlertsResult",
+    "DeriveInvoiceAlertsInput",
+    "ConfirmedDuplicateEvidence",
+    "PossibleDuplicateEvidence",
+    "InvoiceTotalMismatchEvidence",
+    "SuspiciousOverpaymentEvidence",
+    "derive_invoice_alerts",
 ]

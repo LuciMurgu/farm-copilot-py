@@ -67,3 +67,10 @@ Copy and fill in when adding a new decision:
 - **Decision:** Domain enums (`domain/enums.py`) are defined as separate `StrEnum` classes with identical values to the database enums (`database/models.py`). The domain layer does not import from the database layer.
 - **Reason:** Preserves domain layer purity — `domain/` must have zero imports from `database/`, `contracts/`, `worker/`, or `api/`. Identical values are intentional and verified by convention.
 - **Alternatives rejected:** Shared enum module (creates coupling), importing database enums in domain (violates layer boundary).
+
+### DEC-0007 — Alert evidence uses typed dataclasses per alert kind
+
+- **Date:** 2026-04-03
+- **Decision:** Alert evidence uses typed dataclasses per alert kind (`ConfirmedDuplicateEvidence`, `PossibleDuplicateEvidence`, `InvoiceTotalMismatchEvidence`, `SuspiciousOverpaymentEvidence`) instead of untyped `dict[str, unknown]`. Resolves OQ-0009 from the TypeScript version.
+- **Reason:** The TypeScript version used `evidence: Record<string, unknown>` which caused silent breakage when evidence field names were renamed. Typed dataclasses catch field mismatches at definition time and provide IDE autocompletion. This is the key architectural improvement of the Python port.
+- **Alternatives rejected:** Keeping `dict[str, object]` (repeats TypeScript mistake), single generic evidence class (less type safety).
