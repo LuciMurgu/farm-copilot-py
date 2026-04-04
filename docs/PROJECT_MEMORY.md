@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-03 (Prompt 9 — domain alert derivation + 162 tests total)
+2026-04-04 (Prompt 10 — domain explanation derivation + 184 tests total — DOMAIN COMPLETE)
 
 ---
 
@@ -56,7 +56,8 @@ Update this file at the end of every meaningful session.
 | Exact normalization | `domain/exact_normalization.py` — 4-tier alias precedence, winner/ambiguous resolution |
 | Stock-in derivation | `domain/stock_in_derivation.py` — validation gate, eligibility checks, 6 skip reasons |
 | Alert derivation (P2 fix) | `domain/alert_derivation.py` — 4 alert types, typed evidence dataclasses, noise exclusion |
-| Domain tests | `tests/domain/` — 162 tests, all passing |
+| Explanation derivation | `domain/explanation_derivation.py` — 1:1 alert→explanation, typed evidence reading, 4 builders |
+| Domain tests | `tests/domain/` — 184 tests, all passing |
 
 ---
 
@@ -90,6 +91,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 4** — Database query helpers
-2. **Prompt 5** — Domain logic modules (validation, classification, normalization, benchmark, alerts)
-3. **Prompt 6** — Worker pipeline orchestrators
+1. **Prompt 11** — Pydantic contracts (request/response models)
+2. **Prompt 12** — Database query modules (14 helpers)
+3. **Prompt 13** — Worker pipeline orchestrators

@@ -64,6 +64,18 @@ from .exact_normalization import (
     ResolveExactNormalizationWinnerInput,
     resolve_exact_normalization_winner,
 )
+from .explanation_derivation import (
+    BenchmarkContextRef,
+    DeriveInvoiceExplanationsInput,
+    DuplicateEvidenceSummaryRef,
+    ExplanationCounts,
+    ExplanationCountsByKind,
+    ExplanationDataUsed,
+    ExplanationSourceReferences,
+    InvoiceExplanation,
+    InvoiceExplanationsResult,
+    derive_invoice_explanations,
+)
 from .invoice_validation import (
     InvoiceValidationResult,
     InvoiceValidationSummary,
@@ -214,4 +226,15 @@ __all__ = [
     "InvoiceTotalMismatchEvidence",
     "SuspiciousOverpaymentEvidence",
     "derive_invoice_alerts",
+    # Explanation Derivation
+    "ExplanationDataUsed",
+    "BenchmarkContextRef",
+    "DuplicateEvidenceSummaryRef",
+    "ExplanationSourceReferences",
+    "InvoiceExplanation",
+    "ExplanationCountsByKind",
+    "ExplanationCounts",
+    "InvoiceExplanationsResult",
+    "DeriveInvoiceExplanationsInput",
+    "derive_invoice_explanations",
 ]
