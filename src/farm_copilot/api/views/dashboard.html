@@ -11,6 +11,11 @@
         <p class="text-sm text-muted">Upload an XML e-Factura for processing</p>
     </a>
 
+    <a href="/invoices" class="card" style="text-decoration:none; color:var(--text); transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        <h2 style="margin-bottom:0.5rem;">📋 All Invoices</h2>
+        <p class="text-sm text-muted">Browse, filter, and review your invoices</p>
+    </a>
+
     {% if farm_id %}
     <a href="/anaf/status/{{ farm_id }}" class="card" style="text-decoration:none; color:var(--text); transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
         <h2 style="margin-bottom:0.5rem;">🔌 ANAF Connection</h2>

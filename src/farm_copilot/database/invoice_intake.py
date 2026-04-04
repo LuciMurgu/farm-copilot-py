@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import Invoice, UploadedDocument
@@ -86,3 +86,57 @@ async def get_uploaded_document_by_id(
         )
     )
     return result.scalar_one_or_none()
+
+
+async def list_invoices_by_farm(
+    session: AsyncSession,
+    *,
+    farm_id: UUID,
+    status: str | None = None,
+    limit: int = 50,
+    offset: int = 0,
+) -> tuple[list[Invoice], int]:
+    """List invoices for a farm, optionally filtered by status.
+
+    Returns (invoices, total_count) for pagination.
+    Ordered by created_at descending (newest first).
+    """
+    filters = [Invoice.farm_id == farm_id]
+    if status is not None:
+        filters.append(Invoice.status == status)
+
+    # Count query
+    count_stmt = select(func.count()).select_from(Invoice).where(*filters)
+    count_result = await session.execute(count_stmt)
+    total = count_result.scalar_one()
+
+    # Data query
+    data_stmt = (
+        select(Invoice)
+        .where(*filters)
+        .order_by(Invoice.created_at.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+    data_result = await session.execute(data_stmt)
+    invoices = list(data_result.scalars().all())
+
+    return invoices, total
+
+
+async def count_invoices_by_status(
+    session: AsyncSession,
+    *,
+    farm_id: UUID,
+) -> dict[str, int]:
+    """Count invoices grouped by status.
+
+    Returns dict like {"uploaded": 3, "completed": 12, ...}.
+    """
+    stmt = (
+        select(Invoice.status, func.count())
+        .where(Invoice.farm_id == farm_id)
+        .group_by(Invoice.status)
+    )
+    result = await session.execute(stmt)
+    return {str(row[0]): row[1] for row in result.all()}

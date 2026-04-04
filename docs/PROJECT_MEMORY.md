@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 24 — Auth + farm onboarding)
+2026-04-04 (Prompt 25 — Invoice list view)
 
 ---
 
@@ -246,6 +246,21 @@ Update this file at the end of every meaningful session.
 | Session config | `SESSION_SECRET_KEY` in `.env.*`, Starlette `SessionMiddleware` |
 | `_PILOT_FARM_ID` | **Eliminated** from upload.py + invoice.py |
 | Tests | 10 auth tests |
+
+### Invoice list view
+
+> Browse all invoices with status filter tabs, alert count badges, pagination, and empty state.
+
+| Item | Status |
+|------|--------|
+| `list_invoices_by_farm` | `database/invoice_intake.py` — pagination + status filter |
+| `count_invoices_by_status` | Same file — group-by status counts |
+| `count_alerts_by_invoice_ids` | `database/invoice_alerts.py` — batch N+1 avoidance |
+| `GET /invoices` route | `api/routes/invoice.py` — status/page query params |
+| `invoice_list.html` | Status tabs, table, alert badges, pagination, empty state |
+| Navigation | Layout nav + dashboard card link to `/invoices` |
+| Tests | 4 invoice list tests |
+| **Total** | **309 unit + 11 integration** |
 
 ---
 

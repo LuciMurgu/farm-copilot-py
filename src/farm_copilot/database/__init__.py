@@ -25,6 +25,7 @@ from .benchmark_observations import (
 from .canonical_products import get_canonical_product_by_id, list_canonical_products
 from .encryption import decrypt_token, encrypt_token
 from .invoice_alerts import (
+    count_alerts_by_invoice_ids,
     delete_alerts_by_invoice_id,
     get_alerts_by_invoice_id,
     persist_invoice_alerts,
@@ -40,10 +41,12 @@ from .invoice_extraction import (
     update_invoice_extraction,
 )
 from .invoice_intake import (
+    count_invoices_by_status,
     get_invoice_shell_by_id,
     get_uploaded_document_by_id,
     insert_invoice_shell,
     insert_uploaded_document,
+    list_invoices_by_farm,
 )
 from .invoice_line_classification import update_invoice_line_item_classification
 from .invoice_line_items import (

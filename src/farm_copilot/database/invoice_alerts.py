@@ -6,7 +6,7 @@ import json
 from dataclasses import asdict
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from farm_copilot.domain.alert_derivation import InvoiceAlert
@@ -112,3 +112,28 @@ async def delete_alerts_by_invoice_id(
     rows = result.all()
     await session.flush()
     return len(rows)
+
+
+async def count_alerts_by_invoice_ids(
+    session: AsyncSession,
+    *,
+    invoice_ids: list[UUID],
+) -> dict[UUID, int]:
+    """Count alerts for multiple invoices in one query.
+
+    Returns {invoice_id: alert_count}. Used by list view to show
+    alert badges without N+1 queries.
+    """
+    if not invoice_ids:
+        return {}
+
+    stmt = (
+        select(
+            InvoiceAlertRecord.invoice_id,
+            func.count().label("cnt"),
+        )
+        .where(InvoiceAlertRecord.invoice_id.in_(invoice_ids))
+        .group_by(InvoiceAlertRecord.invoice_id)
+    )
+    result = await session.execute(stmt)
+    return {row[0]: row[1] for row in result.all()}
