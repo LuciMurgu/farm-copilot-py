@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 14b — pipeline orchestrator — WORKER COMPLETE)
+2026-04-04 (Prompt 15 — FastAPI app — ALL LAYERS COMPLETE)
 
 ---
 
@@ -113,6 +113,21 @@ Update this file at the end of every meaningful session.
 | Barrel exports | `worker/__init__.py` — all 15 functions exported |
 | Pipeline orchestrator | `worker/xml_invoice_processing.py` — 9-step sequential processing, short-circuit, status resolution |
 
+### API layer
+
+| Item | Status |
+|------|--------|
+| App factory | `api/app.py` — FastAPI + static mount + router registration |
+| Dependencies | `api/deps.py` — get_db re-export |
+| Templates | `api/templates.py` — Jinja2 setup |
+| Result cache | `api/result_cache.py` — temporary in-memory (alerts/explanations) |
+| Upload routes | `api/routes/upload.py` — GET / + POST /upload |
+| Invoice routes | `api/routes/invoice.py` — detail + reprocess + correct-line |
+| Layout template | `api/views/layout.html` — dark-mode base |
+| Upload template | `api/views/upload.html` — file upload form |
+| Detail template | `api/views/invoice_detail.html` — header + alerts + lines + pipeline steps |
+| Entry point | `api/__main__.py` — uvicorn dev server |
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -145,6 +160,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 15** — FastAPI app + API routes
-2. **Prompt 16** — Integration tests
-3. **Prompt 17** — End-to-end pipeline tests
+1. **Prompt 16** — Integration tests (DB + pipeline end-to-end)
+2. **Prompt 17** — Visual polish + UI enhancements
+3. **Prompt 18** — Pilot deployment prep

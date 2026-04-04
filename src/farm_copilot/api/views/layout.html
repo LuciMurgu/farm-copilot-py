@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Farm Copilot{% endblock %}</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --border: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #7dd3fc;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --radius: 8px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
+        h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; }
+        h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--accent); }
+        h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { color: var(--accent-hover); text-decoration: underline; }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-success { background: rgba(74, 222, 128, 0.15); color: var(--success); }
+        .badge-warning { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
+        .badge-danger  { background: rgba(248, 113, 113, 0.15); color: var(--danger); }
+        .badge-info    { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
+        .badge-muted   { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        th { text-align: left; padding: 0.5rem; color: var(--text-muted); font-weight: 500; border-bottom: 1px solid var(--border); }
+        td { padding: 0.5rem; border-bottom: 1px solid var(--border); }
+        tr:hover td { background: rgba(56, 189, 248, 0.04); }
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+        .btn-outline:hover { background: var(--surface-hover); }
+        .error-msg {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            color: var(--danger);
+            margin-bottom: 1rem;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        .header-logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        input[type="file"] {
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            width: 100%;
+            color: var(--text);
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        input[type="text"], select {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.5rem 0.75rem;
+            color: var(--text);
+            font-size: 0.875rem;
+            width: 100%;
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mt-2 { margin-top: 1rem; }
+        .text-muted { color: var(--text-muted); }
+        .text-sm { font-size: 0.875rem; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-logo">🌾 Farm Copilot</div>
+            <a href="/" class="text-sm">← Upload</a>
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
