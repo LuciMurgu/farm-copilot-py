@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 11 — Pydantic contracts + 197 tests total)
+2026-04-04 (Prompt 12a — database query modules + 197 tests total)
 
 ---
 
@@ -69,6 +69,20 @@ Update this file at the end of every meaningful session.
 | Barrel exports | `contracts/__init__.py` — all models + enums |
 | Contract tests | `tests/test_contracts.py` — 13 tests, all passing |
 
+### Database query helpers (Prompt 12a)
+
+| Item | Status |
+|------|--------|
+| Invoice intake | `database/invoice_intake.py` — 4 functions (insert doc/shell, get by ID) |
+| Invoice extraction | `database/invoice_extraction.py` — 2 functions (get + update header) |
+| Invoice line items | `database/invoice_line_items.py` — 3 functions (replace, list, get) |
+| Invoice status | `database/invoice_status.py` — 1 function (update status) |
+| Line classification | `database/invoice_line_classification.py` — 1 function |
+| Line normalization | `database/invoice_line_normalization.py` — 1 function |
+| Duplicate candidates | `database/invoice_duplicate_candidates.py` — 1 function |
+| Canonical products | `database/canonical_products.py` — 2 functions |
+| Barrel exports | `database/__init__.py` — all 15 query functions exported |
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -101,6 +115,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 12** — Database query modules (14 helpers)
+1. **Prompt 12b** — Database query modules (benchmark, stock, corrections, product aliases)
 2. **Prompt 13** — Worker pipeline orchestrators
 3. **Prompt 14** — API routes + views
