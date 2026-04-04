@@ -95,6 +95,9 @@ from .product_aliases import (
 )
 from .session import async_session, get_db, get_engine
 from .stock_movements import (
+    StockBalance,
+    get_stock_balances,
+    get_stock_movements_for_product,
     insert_stock_movement_idempotent,
     list_stock_movements_by_invoice_id,
 )
@@ -186,6 +189,9 @@ __all__ = [
     "list_benchmark_observations",
     "list_benchmark_observations_by_provenance",
     # Query helpers — stock movements
+    "StockBalance",
+    "get_stock_balances",
+    "get_stock_movements_for_product",
     "insert_stock_movement_idempotent",
     "list_stock_movements_by_invoice_id",
     # Query helpers — line corrections

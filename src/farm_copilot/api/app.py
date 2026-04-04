@@ -16,6 +16,7 @@ from farm_copilot.api.routes.anaf import router as anaf_router
 from farm_copilot.api.routes.auth_routes import router as auth_router
 from farm_copilot.api.routes.health import router as health_router
 from farm_copilot.api.routes.invoice import router as invoice_router
+from farm_copilot.api.routes.stock import router as stock_router
 from farm_copilot.api.routes.upload import router as upload_router
 from farm_copilot.api.templates import STATIC_DIR
 from farm_copilot.worker.scheduler import start_scheduler, stop_scheduler
@@ -59,6 +60,7 @@ def create_app() -> FastAPI:
     application.include_router(auth_router)
     application.include_router(upload_router)
     application.include_router(invoice_router)
+    application.include_router(stock_router)
     application.include_router(anaf_router)
 
     return application

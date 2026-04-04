@@ -186,6 +186,7 @@
                 {% if request.session.get('user_id') %}
                 <a href="/dashboard">Dashboard</a>
                 <a href="/invoices">Invoices</a>
+                <a href="/stock">Stock</a>
                 <a href="/upload">Upload</a>
                 {% if request.session.get('farm_id') %}
                 <a href="/anaf/status/{{ request.session.get('farm_id') }}">ANAF</a>

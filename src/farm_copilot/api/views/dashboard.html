@@ -50,7 +50,7 @@
 {% endif %}
 
 {# ── Quick actions ── #}
-<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-top:1.5rem;">
+<div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:1rem; margin-top:1.5rem;">
     <a href="/upload" class="card" style="text-decoration:none; color:var(--text); text-align:center; transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
         <span style="font-size:1.5rem;">📤</span>
         <p class="text-sm" style="margin-top:0.25rem;">Upload Invoice</p>
@@ -58,6 +58,10 @@
     <a href="/invoices" class="card" style="text-decoration:none; color:var(--text); text-align:center; transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
         <span style="font-size:1.5rem;">📄</span>
         <p class="text-sm" style="margin-top:0.25rem;">All Invoices</p>
+    </a>
+    <a href="/stock" class="card" style="text-decoration:none; color:var(--text); text-align:center; transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-size:1.5rem;">📦</span>
+        <p class="text-sm" style="margin-top:0.25rem;">Stock Overview</p>
     </a>
     <a href="/anaf/status/{{ data.farm_id }}" class="card" style="text-decoration:none; color:var(--text); text-align:center; transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
         <span style="font-size:1.5rem;">🔗</span>

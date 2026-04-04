@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 26 — Dashboard action feed)
+2026-04-04 (Prompt 27 — Stock overview)
 
 ---
 
@@ -273,7 +273,24 @@ Update this file at the end of every meaningful session.
 | CSS | Stats row, action feed, priority color borders in `layout.html` |
 | Action sources | Critical alerts, warnings, reviews, token expiry, ANAF connect, sync results |
 | Tests | 5 dashboard tests |
-| **Total** | **315 unit + 11 integration** |
+
+### Stock overview
+
+> Computed stock balances from movement aggregates, product detail drill-down.
+
+| Item | Status |
+|------|--------|
+| `StockBalance` dataclass | `database/stock_movements.py` — computed `balance` property |
+| `get_stock_balances` | Aggregate SUM + CASE + JOIN to canonical_products |
+| `get_stock_movements_for_product` | Paginated movements for detail view |
+| `GET /stock` route | Balance overview table |
+| `GET /stock/{product_id}` route | Movement history for one product |
+| `stock_overview.html` | Color-coded balance table, empty state |
+| `stock_detail.html` | Direction badges (in/out/adjustment), invoice links |
+| Navigation | Layout nav + dashboard card link to `/stock` |
+| Tests | 5 stock tests |
+| **Product loop** | login → dashboard → invoices → alerts → stock → ANAF sync |
+| **Total** | **321 unit + 11 integration** |
 
 ---
 
