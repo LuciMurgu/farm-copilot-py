@@ -144,3 +144,10 @@ Copy and fill in when adding a new decision:
 - **Decision:** Cookie-based sessions via Starlette `SessionMiddleware` (not JWT). Appropriate for server-rendered Jinja2 app. 7-day session lifetime. Single-worker deployment means no shared session store needed. `bcrypt` for password hashing. Three roles: `owner`, `member`, `viewer`.
 - **Reason:** Server-rendered app with Jinja2 templates benefits from simple cookie sessions. No need for JWT's stateless benefits since all requests go to a single server. `bcrypt` is the gold standard for password hashing with automatic salting.
 - **Alternatives rejected:** JWT (stateless but requires token refresh logic, CSRF complexity), external session store like Redis (unnecessary for single-worker MVP), OAuth-only (too complex for pilot onboarding).
+
+### DEC-0018 — JSON API layer at /api/v1, session-cookie auth, CORS for frontend origin
+
+- **Date:** 2026-04-05
+- **Decision:** Add a parallel `/api/v1/` JSON API layer alongside existing Jinja2 HTML routes. Same session-cookie auth mechanism. CORS configured for `localhost:3000` + `FRONTEND_URL` env var with `allow_credentials=True`. The `/api/v1` prefix is added to `AuthRedirectMiddleware.PUBLIC_PREFIXES` so the HTML redirect middleware skips it — JSON routes handle their own 401 responses (JSON `{"detail": "..."}`, not HTML redirects). Existing HTML routes untouched.
+- **Reason:** A Next.js SPA frontend needs JSON responses. Session cookies work cross-origin with CORS `credentials: true`. Reusing session auth avoids a second auth system (no JWT). Keeping `/api/v1` separate from HTML routes ensures the SPA gets proper 401 JSON errors instead of 302 redirects.
+- **Alternatives rejected:** JWT tokens (adds token refresh complexity, CSRF concerns, requires client-side token storage), separate API service (unnecessary infrastructure), modifying existing routes to support both HTML and JSON (violates single responsibility).

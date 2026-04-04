@@ -11,7 +11,7 @@ class AuthRedirectMiddleware(BaseHTTPMiddleware):
     """Redirect unauthenticated users to /login for protected routes."""
 
     PUBLIC_PATHS = {"/login", "/register", "/health"}
-    PUBLIC_PREFIXES = ("/static", "/anaf")
+    PUBLIC_PREFIXES = ("/static", "/anaf", "/api/v1")
 
     async def dispatch(
         self, request: Request, call_next: object

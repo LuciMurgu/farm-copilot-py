@@ -137,3 +137,28 @@ async def count_alerts_by_invoice_ids(
     )
     result = await session.execute(stmt)
     return {row[0]: row[1] for row in result.all()}
+
+
+async def list_alerts_by_farm(
+    session: AsyncSession,
+    *,
+    farm_id: UUID,
+    severity: str | None = None,
+    limit: int = 50,
+) -> list[InvoiceAlertRecord]:
+    """List alerts for a farm, optionally filtered by severity.
+
+    Ordered by created_at descending. Used by /api/v1/alerts endpoint.
+    """
+    filters = [InvoiceAlertRecord.farm_id == farm_id]
+    if severity is not None:
+        filters.append(InvoiceAlertRecord.severity == severity)
+
+    stmt = (
+        select(InvoiceAlertRecord)
+        .where(*filters)
+        .order_by(InvoiceAlertRecord.created_at.desc())
+        .limit(limit)
+    )
+    result = await session.execute(stmt)
+    return list(result.scalars().all())

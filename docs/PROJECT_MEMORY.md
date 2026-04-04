@@ -327,6 +327,21 @@ Update this file at the end of every meaningful session.
 | Bugs fixed | `saga_export.py`: missing `farm_id` + non-existent `supplier_name` attr |
 | **Total** | **332 unit + 11 integration** |
 
+### JSON API v1 layer
+
+> `/api/v1/` JSON endpoints for the Next.js SPA frontend. Session-cookie auth, CORS, zero business logic duplication.
+
+| Item | Status |
+|------|--------|
+| `contracts/api_v1_models.py` | 28 Pydantic v2 response/request models (no Any types) |
+| `api/deps.py` | `ApiUser` dataclass + `get_current_user_api` dependency → 401 JSON |
+| `api/routes/api_v1.py` | 15 endpoints: auth (3), dashboard (1), invoices (4), stock (2), export (2), anaf (2), alerts (1) |
+| `api/app.py` | CORSMiddleware (localhost:3000 + FRONTEND_URL), api_v1 router mount |
+| `api/middleware.py` | `/api/v1` in PUBLIC_PREFIXES — bypasses HTML redirect middleware |
+| `database/invoice_alerts.py` | `list_alerts_by_farm` query for alerts endpoint |
+| Tests | 32 pure-logic tests (`tests/api/test_api_v1.py`) |
+| **Total** | **453 unit + 11 integration** |
+
 ---
 
 ## Deferred
@@ -343,6 +358,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 25** — Additional pipeline features (fuzzy normalization)
-2. **Prompt 26** — Farm invitation + multi-user
-3. **Prompt 27** — Monitoring + logging dashboard
+1. **Prompt 30** — Next.js SPA frontend consuming /api/v1
+2. **Prompt 31** — Additional pipeline features (fuzzy normalization)
+3. **Prompt 32** — Farm invitation + multi-user
