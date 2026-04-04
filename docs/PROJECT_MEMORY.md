@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 28 — SAGA XML export)
+2026-04-04 (E2E verification — 31/32 checks passed)
 
 ---
 
@@ -306,6 +306,25 @@ Update this file at the end of every meaningful session.
 | `POST /export/saga/bulk` | Bulk export (comma-separated IDs) |
 | UI | “Download for SAGA” on detail, “Export to SAGA” on list |
 | Tests | 11 SAGA XML tests |
+
+### E2E verification
+
+> Full product smoke test: 17 tables, 343 unit tests, 31/32 live checks. Fixed 2 bugs in SAGA export mapper.
+
+| Item | Status |
+|------|--------|
+| Migrations | 17 tables ✅ |
+| Unit tests | 343 passed ✅ |
+| Server + scheduler | Healthy, auto-sync running ✅ |
+| Auth flow | Register, login, logout, session protection ✅ |
+| Dashboard | Action feed, stats, quick actions ✅ |
+| Upload | XML upload → pipeline → detail redirect ✅ |
+| Invoice list | Filters, SAGA bulk export button ✅ |
+| Stock | Overview + balance table ✅ |
+| SAGA export | Single XML download with correct SAGA format ✅ |
+| ANAF status | Status page with sync info ✅ |
+| Reprocess | Idempotent reprocessing ✅ |
+| Bugs fixed | `saga_export.py`: missing `farm_id` + non-existent `supplier_name` attr |
 | **Total** | **332 unit + 11 integration** |
 
 ---

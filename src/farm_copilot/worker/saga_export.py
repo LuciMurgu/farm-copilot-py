@@ -234,15 +234,13 @@ async def build_saga_export_invoice(
         return None
 
     line_items = await get_invoice_line_items_by_invoice_id(
-        session, invoice_id=invoice_id
+        session, invoice_id=invoice_id, farm_id=farm_id
     )
 
     # Extract supplier info from raw_extraction_data
     ext = invoice.raw_extraction_data or {}
     supplier_cif = ext.get("supplier_tax_id") or ""
-    supplier_name = invoice.supplier_name or ext.get(
-        "supplier_name", ""
-    )
+    supplier_name = ext.get("supplier_name", "")
 
     lines = [
         SagaExportLine(
