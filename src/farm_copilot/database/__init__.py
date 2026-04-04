@@ -1,5 +1,11 @@
 """Database package — models, session factory, and query helpers."""
 
+from .benchmark_observations import (
+    insert_benchmark_observation,
+    insert_benchmark_observations_batch,
+    list_benchmark_observations,
+    list_benchmark_observations_by_provenance,
+)
 from .canonical_products import get_canonical_product_by_id, list_canonical_products
 from .invoice_duplicate_candidates import list_invoice_duplicate_candidates
 from .invoice_extraction import (
@@ -20,6 +26,10 @@ from .invoice_line_items import (
 )
 from .invoice_line_normalization import update_invoice_line_item_normalization
 from .invoice_status import update_invoice_status
+from .line_corrections import (
+    insert_line_correction,
+    list_line_corrections_by_line_item_id,
+)
 from .models import (
     Base,
     BenchmarkObservation,
@@ -39,7 +49,18 @@ from .models import (
     Supplier,
     UploadedDocument,
 )
+from .normalization_lookup import list_exact_normalization_candidates
+from .product_aliases import (
+    list_precedence_ordered_visible_aliases,
+    list_product_aliases_by_alias_text,
+    list_product_aliases_by_canonical_product_id,
+    list_visible_product_aliases_by_alias_text,
+)
 from .session import async_session, get_db, get_engine
+from .stock_movements import (
+    insert_stock_movement_idempotent,
+    list_stock_movements_by_invoice_id,
+)
 
 __all__ = [
     # Base
@@ -89,5 +110,23 @@ __all__ = [
     # Query helpers — canonical products
     "get_canonical_product_by_id",
     "list_canonical_products",
+    # Query helpers — product aliases
+    "list_product_aliases_by_canonical_product_id",
+    "list_product_aliases_by_alias_text",
+    "list_visible_product_aliases_by_alias_text",
+    "list_precedence_ordered_visible_aliases",
+    # Query helpers — normalization lookup
+    "list_exact_normalization_candidates",
+    # Query helpers — benchmark observations
+    "insert_benchmark_observation",
+    "insert_benchmark_observations_batch",
+    "list_benchmark_observations",
+    "list_benchmark_observations_by_provenance",
+    # Query helpers — stock movements
+    "insert_stock_movement_idempotent",
+    "list_stock_movements_by_invoice_id",
+    # Query helpers — line corrections
+    "insert_line_correction",
+    "list_line_corrections_by_line_item_id",
 ]
 

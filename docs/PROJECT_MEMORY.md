@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 12a — database query modules + 197 tests total)
+2026-04-04 (Prompt 12b — database query modules complete — DATABASE COMPLETE)
 
 ---
 
@@ -83,6 +83,17 @@ Update this file at the end of every meaningful session.
 | Canonical products | `database/canonical_products.py` — 2 functions |
 | Barrel exports | `database/__init__.py` — all 15 query functions exported |
 
+### Database query helpers (Prompt 12b)
+
+| Item | Status |
+|------|--------|
+| Product aliases | `database/product_aliases.py` — 4 functions (4-tier CASE precedence) |
+| Normalization lookup | `database/normalization_lookup.py` — 1 function (join + precedence) |
+| Benchmark observations | `database/benchmark_observations.py` — 4 functions (insert, batch, list, provenance) |
+| Stock movements | `database/stock_movements.py` — 2 functions (idempotent ON CONFLICT DO NOTHING) |
+| Line corrections | `database/line_corrections.py` — 2 functions (insert + list) |
+| Barrel exports | `database/__init__.py` — all 28 query functions exported |
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -115,6 +126,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 12b** — Database query modules (benchmark, stock, corrections, product aliases)
-2. **Prompt 13** — Worker pipeline orchestrators
-3. **Prompt 14** — API routes + views
+1. **Prompt 13** — Worker pipeline orchestrators
+2. **Prompt 14** — API routes + views
+3. **Prompt 15** — End-to-end XML processing pipeline
