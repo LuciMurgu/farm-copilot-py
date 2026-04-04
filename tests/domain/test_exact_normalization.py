@@ -10,7 +10,6 @@ from farm_copilot.domain.exact_normalization import (
     resolve_exact_normalization_winner,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

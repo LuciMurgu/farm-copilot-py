@@ -16,7 +16,6 @@ from farm_copilot.domain.duplicate_suspicion import (
 )
 from farm_copilot.domain.invoice_validation import InvoiceValidationResult
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

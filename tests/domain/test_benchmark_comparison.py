@@ -2,8 +2,6 @@
 
 from decimal import Decimal
 
-import pytest
-
 from farm_copilot.domain.benchmark_comparison import (
     BenchmarkComparisonSummary,
     BenchmarkLineInput,
@@ -19,7 +17,6 @@ from farm_copilot.domain.benchmark_comparison import (
     resolve_invoice_benchmark_comparison,
     summarize_benchmark_results,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers — reusable factory functions

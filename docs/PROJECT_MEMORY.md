@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 15 — FastAPI app — ALL LAYERS COMPLETE)
+2026-04-04 (Prompt 16 — integration tests — FUNCTIONALLY COMPLETE)
 
 ---
 
@@ -128,6 +128,17 @@ Update this file at the end of every meaningful session.
 | Detail template | `api/views/invoice_detail.html` — header + alerts + lines + pipeline steps |
 | Entry point | `api/__main__.py` — uvicorn dev server |
 
+### Integration tests
+
+| Item | Status |
+|------|--------|
+| Config | `tests/conftest.py` — transaction-rollback session fixture, requires_db marker |
+| Helpers | `tests/helpers.py` — 7 seed factory functions |
+| Stock-in | `tests/integration/test_stock_in_integration.py` — 5 scenarios (create, idempotent, gate, service skip, no product) |
+| Normalization | `tests/integration/test_normalization_integration.py` — 3 scenarios (winner, unmatched, ambiguous) |
+| Pipeline | `tests/integration/test_pipeline_integration.py` — 3 scenarios (E2E XML, not_found, unsupported_source) |
+| **Total** | **236 unit + 11 integration (skipped without DATABASE_URL)** |
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -160,6 +171,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 16** — Integration tests (DB + pipeline end-to-end)
-2. **Prompt 17** — Visual polish + UI enhancements
-3. **Prompt 18** — Pilot deployment prep
+1. **Prompt 17** — Visual polish + UI enhancements
+2. **Prompt 18** — Pilot deployment prep (Docker, env config)
+3. **Prompt 19** — Additional pipeline features (fuzzy normalization)

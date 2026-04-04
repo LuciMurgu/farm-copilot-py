@@ -10,7 +10,6 @@ from farm_copilot.domain.duplicate_suspicion import (
     resolve_duplicate_suspicion,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

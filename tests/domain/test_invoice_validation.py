@@ -3,8 +3,8 @@
 from decimal import Decimal
 
 from farm_copilot.domain.benchmark_comparison import (
-    ComparisonAvailable,
     ComparableBasis,
+    ComparisonAvailable,
     NoObservationsFound,
     NotBenchmarkEligible,
 )
@@ -20,7 +20,6 @@ from farm_copilot.domain.invoice_validation import (
     validate_line_total_consistency,
     validate_suspicious_unit_price,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

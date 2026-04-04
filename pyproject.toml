@@ -57,6 +57,9 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = [
+    "integration: marks tests that require a live database (DATABASE_URL)",
+]
 
 # ---------------------------------------------------------------------------
 # Pyright — strict type checking

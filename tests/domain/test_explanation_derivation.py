@@ -15,7 +15,6 @@ from farm_copilot.domain.explanation_derivation import (
     derive_invoice_explanations,
 )
 
-
 # ---------------------------------------------------------------------------
 # Fixtures — alert builders
 # ---------------------------------------------------------------------------

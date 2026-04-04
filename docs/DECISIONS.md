@@ -81,3 +81,11 @@ Copy and fill in when adding a new decision:
 - **Decision:** lxml is the XML parsing library for e-Factura UBL 2.1 invoices. The parser uses namespace-aware XPath with a UBL 2.1 namespace map instead of stripping namespace prefixes.
 - **Reason:** Native XPath support, proper namespace handling, future schematron validation capability for CIUS-RO compliance. lxml is the de facto standard for XML processing in Python.
 - **Alternatives rejected:** fast-xml-parser (JS only), xml.etree.ElementTree (no XPath namespace support, limited API), defusedxml (wrapper, not full parser).
+
+### DEC-0009 — Integration tests use transaction rollback for isolation
+
+- **Date:** 2026-04-04
+- **Decision:** Integration tests use transaction rollback for isolation. Each test runs inside a transaction that rolls back after the test, preventing cross-test interference. Tests are skipped when `DATABASE_URL` is not set.
+- **Reason:** No cleanup needed, tests don't interfere, DB is unchanged after tests run. Simpler than commit + cleanup approach.
+- **Alternatives rejected:** Committed transactions + explicit cleanup (more complex, risk of leftover data), separate test databases per test (resource-heavy).
+
