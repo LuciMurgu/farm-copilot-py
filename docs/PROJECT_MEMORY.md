@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 10 — domain explanation derivation + 184 tests total — DOMAIN COMPLETE)
+2026-04-04 (Prompt 11 — Pydantic contracts + 197 tests total)
 
 ---
 
@@ -59,6 +59,16 @@ Update this file at the end of every meaningful session.
 | Explanation derivation | `domain/explanation_derivation.py` — 1:1 alert→explanation, typed evidence reading, 4 builders |
 | Domain tests | `tests/domain/` — 184 tests, all passing |
 
+### Contracts layer
+
+| Item | Status |
+|------|--------|
+| Enum re-exports | `contracts/enums.py` — 6 domain enums re-exported for API convenience |
+| Invoice DTOs | `contracts/invoices.py` — 6 Pydantic v2 models (4 response, 2 request) |
+| Product DTOs | `contracts/products.py` — 2 Pydantic v2 models |
+| Barrel exports | `contracts/__init__.py` — all models + enums |
+| Contract tests | `tests/test_contracts.py` — 13 tests, all passing |
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -91,6 +101,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 11** — Pydantic contracts (request/response models)
-2. **Prompt 12** — Database query modules (14 helpers)
-3. **Prompt 13** — Worker pipeline orchestrators
+1. **Prompt 12** — Database query modules (14 helpers)
+2. **Prompt 13** — Worker pipeline orchestrators
+3. **Prompt 14** — API routes + views
