@@ -12,13 +12,19 @@ from farm_copilot.database.models import Farm, FarmMembership, User
 
 
 def hash_password(password: str) -> str:
-    """Hash a password with bcrypt."""
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    """Hash a password with bcrypt.
+
+    bcrypt truncates at 72 bytes — we do it explicitly to prevent
+    ValueError on newer bcrypt versions.
+    """
+    pw_bytes = password.encode()[:72]
+    return bcrypt.hashpw(pw_bytes, bcrypt.gensalt()).decode()
 
 
 def verify_password(password: str, password_hash: str) -> bool:
     """Verify a password against a bcrypt hash."""
-    return bcrypt.checkpw(password.encode(), password_hash.encode())
+    pw_bytes = password.encode()[:72]
+    return bcrypt.checkpw(pw_bytes, password_hash.encode())
 
 
 async def get_user_by_email(
