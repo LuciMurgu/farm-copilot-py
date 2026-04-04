@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from farm_copilot.api.deps import get_db
+from farm_copilot.api.deps import get_current_farm_id, get_db
 from farm_copilot.api.templates import templates
 from farm_copilot.database.invoice_alerts import get_alerts_by_invoice_id
 from farm_copilot.database.invoice_explanations import (
@@ -25,8 +25,6 @@ from farm_copilot.worker.xml_invoice_processing import (
 
 router = APIRouter()
 
-_PILOT_FARM_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
-
 
 @router.get("/invoice/{invoice_id}")
 async def invoice_detail(
@@ -35,8 +33,12 @@ async def invoice_detail(
     session: AsyncSession = Depends(get_db),
 ) -> object:
     """Render the invoice detail page with lines, alerts, explanations."""
+    farm_id = get_current_farm_id(request)
+    if farm_id is None:
+        return RedirectResponse(url="/login", status_code=302)
+
     invoice = await get_invoice_shell_by_id(
-        session, invoice_id=invoice_id, farm_id=_PILOT_FARM_ID
+        session, invoice_id=invoice_id, farm_id=farm_id
     )
     if invoice is None:
         return templates.TemplateResponse(
@@ -47,15 +49,14 @@ async def invoice_detail(
         )
 
     line_items = await get_invoice_line_items_by_invoice_id(
-        session, invoice_id=invoice_id, farm_id=_PILOT_FARM_ID
+        session, invoice_id=invoice_id, farm_id=farm_id
     )
 
-    # Load persisted alerts + explanations from DB
     alert_records = await get_alerts_by_invoice_id(
-        session, invoice_id=invoice_id, farm_id=_PILOT_FARM_ID
+        session, invoice_id=invoice_id, farm_id=farm_id
     )
     explanation_records = await get_explanations_by_invoice_id(
-        session, invoice_id=invoice_id, farm_id=_PILOT_FARM_ID
+        session, invoice_id=invoice_id, farm_id=farm_id
     )
 
     return templates.TemplateResponse(
@@ -73,15 +74,20 @@ async def invoice_detail(
 
 @router.post("/invoice/{invoice_id}/reprocess")
 async def reprocess_invoice(
+    request: Request,
     invoice_id: uuid.UUID,
     session: AsyncSession = Depends(get_db),
 ) -> object:
     """Re-run the full pipeline for an invoice."""
+    farm_id = get_current_farm_id(request)
+    if farm_id is None:
+        return RedirectResponse(url="/login", status_code=302)
+
     async with session.begin():
         await resolve_xml_invoice_processing(
             session,
             invoice_id=invoice_id,
-            farm_id=_PILOT_FARM_ID,
+            farm_id=farm_id,
         )
 
     return RedirectResponse(
@@ -92,6 +98,7 @@ async def reprocess_invoice(
 
 @router.post("/invoice/{invoice_id}/correct-line")
 async def correct_line(
+    request: Request,
     invoice_id: uuid.UUID,
     line_item_id: str = Form(...),
     canonical_product_id: str = Form(...),
@@ -99,11 +106,15 @@ async def correct_line(
     session: AsyncSession = Depends(get_db),
 ) -> object:
     """Apply a line correction (manual product assignment)."""
+    farm_id = get_current_farm_id(request)
+    if farm_id is None:
+        return RedirectResponse(url="/login", status_code=302)
+
     async with session.begin():
         await apply_unresolved_line_correction(
             session,
             invoice_id=invoice_id,
-            farm_id=_PILOT_FARM_ID,
+            farm_id=farm_id,
             line_item_id=uuid.UUID(line_item_id),
             new_canonical_product_id=uuid.UUID(canonical_product_id),
             actor="web_ui",

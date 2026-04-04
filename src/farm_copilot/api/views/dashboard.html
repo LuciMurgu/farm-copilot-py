@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard — Farm Copilot{% endblock %}
+{% block content %}
+
+<h1 class="mb-2">Welcome, {{ user_name }} 👋</h1>
+<p class="text-muted mb-2">{{ farm_name }}</p>
+
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:1rem; margin-top:1.5rem;">
+    <a href="/upload" class="card" style="text-decoration:none; color:var(--text); transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        <h2 style="margin-bottom:0.5rem;">📄 Upload Invoice</h2>
+        <p class="text-sm text-muted">Upload an XML e-Factura for processing</p>
+    </a>
+
+    {% if farm_id %}
+    <a href="/anaf/status/{{ farm_id }}" class="card" style="text-decoration:none; color:var(--text); transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        <h2 style="margin-bottom:0.5rem;">🔌 ANAF Connection</h2>
+        <p class="text-sm text-muted">Manage SPV auto-sync and OAuth tokens</p>
+    </a>
+    {% endif %}
+</div>
+
+{% endblock %}

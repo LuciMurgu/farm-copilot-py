@@ -137,3 +137,10 @@ Copy and fill in when adding a new decision:
 - **Decision:** Production uses `workers=1` in uvicorn because the ANAF auto-sync scheduler uses `asyncio.create_task` in-process. Multiple workers would create multiple schedulers, each syncing the same farms. Auto-migrations run before server start via `subprocess.run(["python", "-m", "alembic", "upgrade", "head"])`.
 - **Reason:** Keeps deployment simple and prevents duplicate sync operations. The single-process architecture is sufficient for pilot-scale traffic (one farmer, occasional invoice uploads).
 - **Alternatives rejected:** Multiple workers with external scheduler (premature complexity), Gunicorn with preload (scheduler lifecycle issues), separate migration container (extra Docker complexity for pilot).
+
+### DEC-0017 — Cookie-based sessions via Starlette SessionMiddleware
+
+- **Date:** 2026-04-04
+- **Decision:** Cookie-based sessions via Starlette `SessionMiddleware` (not JWT). Appropriate for server-rendered Jinja2 app. 7-day session lifetime. Single-worker deployment means no shared session store needed. `bcrypt` for password hashing. Three roles: `owner`, `member`, `viewer`.
+- **Reason:** Server-rendered app with Jinja2 templates benefits from simple cookie sessions. No need for JWT's stateless benefits since all requests go to a single server. `bcrypt` is the gold standard for password hashing with automatic salting.
+- **Alternatives rejected:** JWT (stateless but requires token refresh logic, CSRF complexity), external session store like Redis (unnecessary for single-worker MVP), OAuth-only (too complex for pilot onboarding).

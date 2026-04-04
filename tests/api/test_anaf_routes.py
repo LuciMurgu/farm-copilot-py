@@ -11,8 +11,21 @@ from uuid import uuid4
 
 import pytest
 from httpx import ASGITransport, AsyncClient
+from itsdangerous import TimestampSigner
 
 from farm_copilot.api.app import app
+from farm_copilot.api.deps import app_settings
+
+
+def _make_session_cookie(data: dict) -> dict:
+    """Create a signed session cookie for test requests."""
+    import base64
+    import json
+
+    payload = base64.b64encode(json.dumps(data).encode()).decode()
+    signer = TimestampSigner(app_settings.session_secret_key)
+    signed = signer.sign(payload).decode()
+    return {"session": signed}
 
 
 @pytest.fixture
@@ -31,6 +44,10 @@ def _mock_db():
     app.dependency_overrides[get_db] = _get_db
     yield mock_session
     app.dependency_overrides = {}
+
+
+_FAKE_USER_ID = str(uuid4())
+_FAKE_FARM_ID = str(uuid4())
 
 
 class TestAnafRoutes:

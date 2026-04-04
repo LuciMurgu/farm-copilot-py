@@ -66,6 +66,8 @@ from .models import (
     CanonicalProduct,
     CorrectionKind,
     Farm,
+    FarmMembership,
+    FarmMembershipRole,
     Invoice,
     InvoiceAlertRecord,
     InvoiceExplanationRecord,
@@ -79,6 +81,7 @@ from .models import (
     StockMovementDirection,
     Supplier,
     UploadedDocument,
+    User,
 )
 from .normalization_lookup import list_exact_normalization_candidates
 from .product_aliases import (
@@ -103,8 +106,11 @@ __all__ = [
     "BenchmarkSourceKind",
     "StockMovementDirection",
     "CorrectionKind",
+    "FarmMembershipRole",
     # Models
     "Farm",
+    "User",
+    "FarmMembership",
     "Supplier",
     "UploadedDocument",
     "Invoice",

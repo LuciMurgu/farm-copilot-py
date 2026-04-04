@@ -123,6 +123,12 @@ def _updated_at() -> Mapped[datetime]:
     )
 
 
+class FarmMembershipRole(enum.StrEnum):
+    OWNER = "owner"
+    MEMBER = "member"
+    VIEWER = "viewer"
+
+
 # ---------------------------------------------------------------------------
 # 1. farms
 # ---------------------------------------------------------------------------
@@ -140,6 +146,62 @@ class Farm(Base):
     suppliers: Mapped[list[Supplier]] = relationship(back_populates="farm")
     documents: Mapped[list[UploadedDocument]] = relationship(back_populates="farm")
     invoices: Mapped[list[Invoice]] = relationship(back_populates="farm")
+
+
+# ---------------------------------------------------------------------------
+# 1b. users
+# ---------------------------------------------------------------------------
+
+
+class User(Base):
+    __tablename__ = "users"
+    __table_args__ = (
+        UniqueConstraint("email", name="uq_users_email"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    email: Mapped[str] = mapped_column(String, nullable=False)
+    password_hash: Mapped[str] = mapped_column(String, nullable=False)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default="true"
+    )
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+
+
+# ---------------------------------------------------------------------------
+# 1c. farm_memberships
+# ---------------------------------------------------------------------------
+
+
+class FarmMembership(Base):
+    __tablename__ = "farm_memberships"
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id", "farm_id", name="uq_farm_memberships_user_farm"
+        ),
+        Index("ix_farm_memberships_user_id", "user_id"),
+        Index("ix_farm_memberships_farm_id", "farm_id"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id"), nullable=False
+    )
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    role: Mapped[FarmMembershipRole] = mapped_column(
+        Enum(
+            FarmMembershipRole,
+            name="farm_membership_role",
+            create_constraint=True,
+            values_callable=lambda e: [m.value for m in e],
+        ),
+        nullable=False,
+    )
+    created_at: Mapped[datetime] = _created_at()
 
 
 # ---------------------------------------------------------------------------

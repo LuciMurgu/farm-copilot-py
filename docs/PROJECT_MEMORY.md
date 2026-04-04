@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 23 — Deployment prep — PRODUCTION-DEPLOYABLE)
+2026-04-04 (Prompt 24 — Auth + farm onboarding)
 
 ---
 
@@ -229,7 +229,23 @@ Update this file at the end of every meaningful session.
 | `.dockerignore` | Lean build context |
 | `README.md` | Dev quickstart + production deployment |
 | Tests | 2 health check tests |
-| **Total** | **295 unit + 11 integration** |
+| **Total** | **305 unit + 11 integration** |
+
+### Authentication + farm onboarding
+
+> Users, farm memberships, bcrypt auth, cookie sessions. `_PILOT_FARM_ID` eliminated. Three roles: owner, member, viewer.
+
+| Item | Status |
+|------|--------|
+| `User` + `FarmMembership` models | `database/models.py` + migration |
+| `api/auth.py` | bcrypt hashing, user CRUD, farm ownership |
+| `api/deps.py` | Session helpers + `AppSettings` |
+| `api/middleware.py` | `AuthRedirectMiddleware` (public paths allowlist) |
+| `api/routes/auth_routes.py` | Login, register, logout, dashboard |
+| Templates | login, register, dashboard + layout nav |
+| Session config | `SESSION_SECRET_KEY` in `.env.*`, Starlette `SessionMiddleware` |
+| `_PILOT_FARM_ID` | **Eliminated** from upload.py + invoice.py |
+| Tests | 10 auth tests |
 
 ---
 
@@ -240,7 +256,6 @@ Update this file at the end of every meaningful session.
 | OCR extraction adapter | ADR 0002 decided provider; not implemented |
 | Already-mapped line reassignment | Needs stock reversal logic |
 | Alias creation from corrections | Designed but deferred |
-| Auth + user model | ADR 0003 designed; not implemented |
 | Queue/workflow engine | Direct invocation only |
 | Eval cases | Framework spec only |
 
@@ -248,6 +263,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 24** — Additional pipeline features (fuzzy normalization)
-2. **Prompt 25** — Authentication + multi-farm support
-3. **Prompt 26** — Monitoring + logging dashboard
+1. **Prompt 25** — Additional pipeline features (fuzzy normalization)
+2. **Prompt 26** — Farm invitation + multi-user
+3. **Prompt 27** — Monitoring + logging dashboard
