@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 13 — e-Factura parser + 236 tests total)
+2026-04-04 (Prompt 14a — worker shims + 236 tests total)
 
 ---
 
@@ -100,6 +100,17 @@ Update this file at the end of every meaningful session.
 |------|--------|
 | e-Factura parser | `worker/efactura_parser.py` — lxml, UBL 2.1 namespaces, 2 error types (DEC-0008) |
 | Parser tests | `tests/worker/test_efactura_parser.py` — 39 tests |
+| Mappers | `worker/mappers.py` — 4 mapping functions (Invoice, LineItem, CanonicalProduct, ProductAlias) |
+| XML extraction shim | `worker/xml_extraction.py` — parse + persist header/lines |
+| Line classification shim | `worker/line_classification.py` — classify + persist |
+| Exact normalization shim | `worker/exact_normalization.py` — alias lookup + persist winner |
+| Benchmark comparison shim | `worker/benchmark_comparison.py` — fetch obs + domain comparison |
+| Invoice validation shim | `worker/invoice_validation.py` — benchmark + dup suspicion + rules |
+| Stock-in shim | `worker/stock_in.py` — derive eligibility + idempotent insert |
+| Alert derivation shim | `worker/alert_derivation.py` — thin sync wrapper |
+| Explanation derivation shim | `worker/explanation_derivation.py` — thin sync wrapper |
+| Line correction shim | `worker/line_correction.py` — correction + re-validation |
+| Barrel exports | `worker/__init__.py` — all 13 functions exported |
 
 ---
 
@@ -133,6 +144,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 14** — Worker pipeline orchestrators
+1. **Prompt 14b** — Pipeline orchestrator (full XML processing pipeline)
 2. **Prompt 15** — API routes + views
 3. **Prompt 16** — End-to-end XML processing pipeline
