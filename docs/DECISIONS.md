@@ -180,3 +180,11 @@ Copy and fill in when adding a new decision:
 - **Reason:** Lightweight dependency (no torch/numpy). Token set ratio is ideal for invoice descriptions with variable word order and extra packaging info. Farmer always makes the final decision — suggestions are just hints.
 - **Alternatives rejected:** pgvector embeddings for suggestions (overkill for 28 products), Levenshtein distance (poor on word reordering), LLM-based suggestions (too slow for per-line UI).
 
+### DEC-0023 — e-Transport uses ANAF XML v2 schema, NC tariff codes from category mapping
+
+- **Date:** 2026-04-05
+- **Decision:** e-Transport XML generation uses ANAF v2 schema (`mfp:anaf:dgti:eTransport:declaratie:v2`). NC tariff codes are mapped from canonical product categories (cereals→1001/1003/1005, fertilizer→3102, pesticides→3808, fuel→2710, seeds→1209). Product-level `nc_code` column allows overrides. Same OAuth tokens as e-Factura. Declarations linked to invoices via optional `invoice_id` FK.
+- **Reason:** Reuses existing infrastructure (lxml, OAuth). Category-level NC mapping covers 90%+ of use cases. Per-product overrides handle edge cases without schema complexity.
+- **Alternatives rejected:** Per-product NC code only (too much manual data entry), external tariff DB lookup (unnecessary complexity for agricultural products).
+
+

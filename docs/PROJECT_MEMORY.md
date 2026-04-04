@@ -399,6 +399,20 @@ Update this file at the end of every meaningful session.
 | Tests | 14 tests (`tests/domain/test_fuzzy_suggestions.py`) |
 | **Total** | **508 unit + 11 integration** |
 
+### e-Transport data model + XML generator
+
+> TransportDeclaration + TransportDeclarationItem tables. XML v2 notification/deletion/confirmation generation via lxml. NC tariff code mapping for agricultural products.
+
+| Item | Status |
+|------|--------|
+| `domain/nc_tariff_codes.py` | NC code mapping (cereals, fertilizers, pesticides, fuel, seeds) |
+| `models.py` | `TransportDeclaration` + `TransportDeclarationItem` + `nc_code` on `CanonicalProduct` |
+| `worker/etransport_xml.py` | Notification, deletion, confirmation XML generators |
+| `database/transport_declarations.py` | CRUD: create, get, list, update, add_item |
+| Migration | `e5f6a7b8c9d0` — 2 new tables + 1 column |
+| Tests | 22 tests (`tests/worker/test_etransport_xml.py`) |
+| **Total** | **530 unit + 11 integration** |
+
 ---
 
 ## Deferred
@@ -414,6 +428,7 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 32** — Next.js SPA frontend consuming /api/v1
-2. **Prompt 33** — Farm invitation + multi-user
+1. **Prompt 33** — e-Transport ANAF API integration + upload flow
+2. **Prompt 34** — Next.js SPA frontend consuming /api/v1
+
 

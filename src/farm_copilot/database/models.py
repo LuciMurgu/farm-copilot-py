@@ -344,6 +344,7 @@ class CanonicalProduct(Base):
     name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     category: Mapped[str | None] = mapped_column(String, nullable=True)
     default_unit: Mapped[str | None] = mapped_column(String, nullable=True)
+    nc_code: Mapped[str | None] = mapped_column(String(8), nullable=True)
     active: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default="true")
     created_at: Mapped[datetime] = _created_at()
     updated_at: Mapped[datetime] = _updated_at()
@@ -760,3 +761,155 @@ class InvoiceExplanationRecord(Base):
     next_action: Mapped[str] = mapped_column(String, nullable=False)
     source_references: Mapped[dict] = mapped_column(JSON, nullable=False)
     created_at: Mapped[datetime] = _created_at()
+
+
+# ---------------------------------------------------------------------------
+# 15. transport_declarations (e-Transport)
+# ---------------------------------------------------------------------------
+
+
+class TransportDeclaration(Base):
+    """An e-Transport declaration for a shipment of goods."""
+
+    __tablename__ = "transport_declarations"
+    __table_args__ = (
+        Index("ix_transport_declarations_farm_id", "farm_id"),
+        Index("ix_transport_declarations_anaf_status", "anaf_status"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+
+    # Declaration identity
+    reference: Mapped[str] = mapped_column(
+        String(100), nullable=False  # e.g. "FC-2026-0042"
+    )
+    declaration_type: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default="notification"
+    )
+    operation_type: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="10"
+    )
+    operation_scope: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="101"
+    )
+    departure_date: Mapped[date] = mapped_column(Date, nullable=False)
+
+    # Sender
+    sender_cif: Mapped[str] = mapped_column(String(20), nullable=False)
+    sender_name: Mapped[str] = mapped_column(String(200), nullable=False)
+    sender_country: Mapped[str] = mapped_column(
+        String(2), nullable=False, server_default="RO"
+    )
+
+    # Receiver
+    receiver_cif: Mapped[str] = mapped_column(String(20), nullable=False)
+    receiver_name: Mapped[str] = mapped_column(String(200), nullable=False)
+    receiver_country: Mapped[str] = mapped_column(
+        String(2), nullable=False, server_default="RO"
+    )
+
+    # Loading location
+    load_country: Mapped[str] = mapped_column(
+        String(2), nullable=False, server_default="RO"
+    )
+    load_county: Mapped[str | None] = mapped_column(String(2))
+    load_city: Mapped[str] = mapped_column(String(100), nullable=False)
+    load_street: Mapped[str | None] = mapped_column(String(200))
+    load_postal_code: Mapped[str | None] = mapped_column(String(10))
+
+    # Unloading location
+    unload_country: Mapped[str] = mapped_column(
+        String(2), nullable=False, server_default="RO"
+    )
+    unload_county: Mapped[str | None] = mapped_column(String(2))
+    unload_city: Mapped[str] = mapped_column(String(100), nullable=False)
+    unload_street: Mapped[str | None] = mapped_column(String(200))
+    unload_postal_code: Mapped[str | None] = mapped_column(String(10))
+
+    # Transport details
+    vehicle_plate: Mapped[str | None] = mapped_column(String(20))
+    carrier_cif: Mapped[str | None] = mapped_column(String(20))
+    carrier_name: Mapped[str | None] = mapped_column(String(200))
+    carrier_country: Mapped[str] = mapped_column(
+        String(2), nullable=False, server_default="RO"
+    )
+
+    # ANAF response
+    upload_index: Mapped[str | None] = mapped_column(String(100))
+    uit_code: Mapped[str | None] = mapped_column(String(36))
+    uit_valid_from: Mapped[date | None] = mapped_column(Date)
+    uit_valid_until: Mapped[date | None] = mapped_column(Date)
+    anaf_status: Mapped[str] = mapped_column(
+        String(20), nullable=False, server_default="draft"
+    )
+    anaf_errors: Mapped[str | None] = mapped_column(Text)
+    raw_xml: Mapped[str | None] = mapped_column(Text)
+
+    # Provenance
+    invoice_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoices.id")
+    )
+
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+
+
+# ---------------------------------------------------------------------------
+# 16. transport_declaration_items
+# ---------------------------------------------------------------------------
+
+
+class TransportDeclarationItem(Base):
+    """A line item (goods) within a transport declaration."""
+
+    __tablename__ = "transport_declaration_items"
+    __table_args__ = (
+        UniqueConstraint(
+            "declaration_id",
+            "line_order",
+            name="uq_transport_items_decl_line",
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    declaration_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("transport_declarations.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    line_order: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    # Product
+    nc_tariff_code: Mapped[str] = mapped_column(String(8), nullable=False)
+    product_description: Mapped[str] = mapped_column(
+        String(500), nullable=False
+    )
+    canonical_product_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("canonical_products.id")
+    )
+
+    # Quantities
+    quantity: Mapped[Decimal] = mapped_column(
+        Numeric(15, 4), nullable=False
+    )
+    unit: Mapped[str] = mapped_column(String(10), nullable=False)
+    net_weight_kg: Mapped[Decimal] = mapped_column(
+        Numeric(15, 2), nullable=False
+    )
+    gross_weight_kg: Mapped[Decimal] = mapped_column(
+        Numeric(15, 2), nullable=False
+    )
+
+    # Value
+    value_ron: Mapped[Decimal] = mapped_column(
+        Numeric(15, 2), nullable=False
+    )
+    operation_scope: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default="101"
+    )
+
+    created_at: Mapped[datetime] = _created_at()
+
