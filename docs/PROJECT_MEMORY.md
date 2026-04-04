@@ -385,6 +385,20 @@ Update this file at the end of every meaningful session.
 | Tests | 10 tests (`tests/test_seed_catalog.py`) |
 | **Total** | **494 unit + 11 integration** |
 
+### Fuzzy product suggestions (rapidfuzz)
+
+> rapidfuzz-powered "Did you mean?" suggestions for unresolved lines. UI-only — farmer always decides. Clicking a suggestion triggers correction + auto-alias.
+
+| Item | Status |
+|------|--------|
+| Dependency | `rapidfuzz>=3.14` (~50KB, no heavy deps) |
+| `domain/fuzzy_suggestions.py` | `suggest_products` — token_set_ratio scoring, min_score, limit, strong threshold |
+| `worker/fuzzy_suggestions.py` | Loads candidates from DB, delegates to domain logic |
+| `invoice.py` route | Fetches suggestions for unresolved lines, passes `all_products` |
+| `invoice_detail.html` | Did You Mean buttons (green ≥80%), collapsible full dropdown fallback |
+| Tests | 14 tests (`tests/domain/test_fuzzy_suggestions.py`) |
+| **Total** | **508 unit + 11 integration** |
+
 ---
 
 ## Deferred
@@ -400,6 +414,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 31** — Fuzzy normalization domain logic + worker (matching engine)
-2. **Prompt 32** — Pipeline integration + UI for candidate selection
-3. **Prompt 33** — Next.js SPA frontend consuming /api/v1
+1. **Prompt 32** — Next.js SPA frontend consuming /api/v1
+2. **Prompt 33** — Farm invitation + multi-user
+

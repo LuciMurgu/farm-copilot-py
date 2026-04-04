@@ -111,6 +111,25 @@ async def invoice_detail(
         session, invoice_id=invoice_id, farm_id=farm_id
     )
 
+    # Fuzzy suggestions for unresolved lines
+    from farm_copilot.database.canonical_products import (
+        list_canonical_products,
+    )
+    from farm_copilot.worker.fuzzy_suggestions import get_fuzzy_suggestions
+
+    unresolved_suggestions: dict[str, object] = {}
+    for line in line_items:
+        if line.canonical_product_id is None and line.raw_description:
+            suggestions = await get_fuzzy_suggestions(
+                session, query_text=line.raw_description
+            )
+            if suggestions.suggestions:
+                unresolved_suggestions[str(line.id)] = suggestions
+
+    all_products = await list_canonical_products(
+        session, active_only=True
+    )
+
     return templates.TemplateResponse(
         request=request,
         name="invoice_detail.html",
@@ -120,6 +139,8 @@ async def invoice_detail(
             "alerts": alert_records,
             "explanations": explanation_records,
             "steps": None,
+            "unresolved_suggestions": unresolved_suggestions,
+            "all_products": all_products,
         },
     )
 

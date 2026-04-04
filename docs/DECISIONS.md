@@ -173,3 +173,10 @@ Copy and fill in when adding a new decision:
 - **Reason:** New farmers see 60-80% of common line items auto-resolve on day one instead of seeing 100% unresolved. Dramatically improves first-use experience. Zero cost — static data, no ML, no API calls.
 - **Alternatives rejected:** Empty catalog (terrible first experience), LLM-generated catalog (hallucination risk), external product database API (unnecessary complexity and dependency).
 
+### DEC-0022 — Fuzzy suggestions use rapidfuzz token_set_ratio, UI-only
+
+- **Date:** 2026-04-05
+- **Decision:** Use `rapidfuzz` (~50KB) for fuzzy string matching. Scorer: `token_set_ratio` handles word reordering and extra words. Products below 50% similarity excluded. Strong suggestions (≥80%) visually highlighted in green. Full product dropdown available as fallback. UI-only — no auto-accept, no probabilistic output touches the fiscal ledger without explicit farmer click.
+- **Reason:** Lightweight dependency (no torch/numpy). Token set ratio is ideal for invoice descriptions with variable word order and extra packaging info. Farmer always makes the final decision — suggestions are just hints.
+- **Alternatives rejected:** pgvector embeddings for suggestions (overkill for 28 products), Levenshtein distance (poor on word reordering), LLM-based suggestions (too slow for per-line UI).
+
