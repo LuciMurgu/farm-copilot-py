@@ -23,7 +23,17 @@ from .benchmark_observations import (
 )
 from .canonical_products import get_canonical_product_by_id, list_canonical_products
 from .encryption import decrypt_token, encrypt_token
+from .invoice_alerts import (
+    delete_alerts_by_invoice_id,
+    get_alerts_by_invoice_id,
+    persist_invoice_alerts,
+)
 from .invoice_duplicate_candidates import list_invoice_duplicate_candidates
+from .invoice_explanations import (
+    delete_explanations_by_invoice_id,
+    get_explanations_by_invoice_id,
+    persist_invoice_explanations,
+)
 from .invoice_extraction import (
     get_invoice_for_extraction_by_id,
     update_invoice_extraction,
@@ -56,6 +66,8 @@ from .models import (
     CorrectionKind,
     Farm,
     Invoice,
+    InvoiceAlertRecord,
+    InvoiceExplanationRecord,
     InvoiceLineItem,
     InvoiceStatus,
     LineClassification,
@@ -103,6 +115,8 @@ __all__ = [
     "LineCorrection",
     "AnafToken",
     "AnafSyncLog",
+    "InvoiceAlertRecord",
+    "InvoiceExplanationRecord",
     # Session
     "get_db",
     "get_engine",
@@ -164,4 +178,12 @@ __all__ = [
     # Query helpers — line corrections
     "insert_line_correction",
     "list_line_corrections_by_line_item_id",
+    # Query helpers — invoice alerts
+    "persist_invoice_alerts",
+    "get_alerts_by_invoice_id",
+    "delete_alerts_by_invoice_id",
+    # Query helpers — invoice explanations
+    "persist_invoice_explanations",
+    "get_explanations_by_invoice_id",
+    "delete_explanations_by_invoice_id",
 ]

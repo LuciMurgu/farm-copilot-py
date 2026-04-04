@@ -10,7 +10,6 @@ from fastapi import APIRouter, Depends, Request, UploadFile
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from farm_copilot.api import result_cache
 from farm_copilot.api.deps import get_db
 from farm_copilot.api.templates import templates
 from farm_copilot.database.invoice_intake import (
@@ -85,18 +84,15 @@ async def upload_invoice(
 
     await session.commit()
 
-    # 5. Run pipeline
+    # 5. Run pipeline (also persists alerts+explanations to DB)
     async with session.begin():
-        result = await resolve_xml_invoice_processing(
+        await resolve_xml_invoice_processing(
             session,
             invoice_id=invoice.id,
             farm_id=_PILOT_FARM_ID,
         )
 
-    # 6. Cache result (alerts/explanations)
-    result_cache.set_result(str(invoice.id), result)
-
-    # 7. Redirect to invoice detail
+    # 6. Redirect to invoice detail
     return RedirectResponse(
         url=f"/invoice/{invoice.id}",
         status_code=303,

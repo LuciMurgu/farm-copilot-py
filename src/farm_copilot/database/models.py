@@ -591,3 +591,76 @@ class AnafSyncLog(Base):
     completed_at: Mapped[datetime | None] = mapped_column(
         TIMESTAMP(timezone=True), nullable=True
     )
+
+
+# ---------------------------------------------------------------------------
+# 13. invoice_alerts
+# ---------------------------------------------------------------------------
+
+
+class InvoiceAlertRecord(Base):
+    __tablename__ = "invoice_alerts"
+    __table_args__ = (
+        Index("ix_invoice_alerts_farm_id", "farm_id"),
+        Index("ix_invoice_alerts_invoice_id", "invoice_id"),
+        Index("ix_invoice_alerts_alert_key", "alert_key"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    invoice_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoices.id"), nullable=False
+    )
+    alert_key: Mapped[str] = mapped_column(String, nullable=False)
+    severity: Mapped[str] = mapped_column(String, nullable=False)
+    subject_type: Mapped[str] = mapped_column(String, nullable=False)
+    subject_id: Mapped[str] = mapped_column(String, nullable=False)
+    reason_codes: Mapped[dict] = mapped_column(JSON, nullable=False)
+    evidence: Mapped[dict] = mapped_column(JSON, nullable=False)
+    confidence: Mapped[str] = mapped_column(String, nullable=False)
+    recommended_action: Mapped[str] = mapped_column(
+        String, nullable=False
+    )
+    created_at: Mapped[datetime] = _created_at()
+
+
+# ---------------------------------------------------------------------------
+# 14. invoice_explanations
+# ---------------------------------------------------------------------------
+
+
+class InvoiceExplanationRecord(Base):
+    __tablename__ = "invoice_explanations"
+    __table_args__ = (
+        Index("ix_invoice_explanations_farm_id", "farm_id"),
+        Index("ix_invoice_explanations_invoice_id", "invoice_id"),
+        Index("ix_invoice_explanations_alert_id", "alert_id"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    invoice_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoices.id"), nullable=False
+    )
+    alert_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("invoice_alerts.id"),
+        nullable=False,
+    )
+    explanation_kind: Mapped[str] = mapped_column(String, nullable=False)
+    subject_type: Mapped[str] = mapped_column(String, nullable=False)
+    subject_id: Mapped[str] = mapped_column(String, nullable=False)
+    line_order: Mapped[int | None] = mapped_column(
+        Integer, nullable=True
+    )
+    what_happened: Mapped[str] = mapped_column(Text, nullable=False)
+    data_used: Mapped[dict] = mapped_column(JSON, nullable=False)
+    why_it_matters: Mapped[str] = mapped_column(Text, nullable=False)
+    support_strength: Mapped[str] = mapped_column(String, nullable=False)
+    next_action: Mapped[str] = mapped_column(String, nullable=False)
+    source_references: Mapped[dict] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = _created_at()

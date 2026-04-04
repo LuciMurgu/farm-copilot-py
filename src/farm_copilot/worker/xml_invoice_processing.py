@@ -23,6 +23,14 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from farm_copilot.database.invoice_alerts import (
+    delete_alerts_by_invoice_id,
+    persist_invoice_alerts,
+)
+from farm_copilot.database.invoice_explanations import (
+    delete_explanations_by_invoice_id,
+    persist_invoice_explanations,
+)
 from farm_copilot.database.invoice_status import update_invoice_status
 from farm_copilot.database.session import async_session
 from farm_copilot.worker.alert_derivation import derive_alerts_from_validation
@@ -365,6 +373,35 @@ async def resolve_xml_invoice_processing(
     else:
         steps.explanation_derivation = ExplanationStepOutcome(
             outcome="completed",
+        )
+
+    # ── Step 8.5: Persist alerts + explanations ─────────────────────
+    if alerts_result and alerts_result.alerts:
+        alert_records = await persist_invoice_alerts(
+            session,
+            farm_id=farm_id,
+            invoice_id=invoice_id,
+            alerts=alerts_result.alerts,
+        )
+        alert_id_map = {
+            f"{r.alert_key}:{r.subject_id}": r.id
+            for r in alert_records
+        }
+        if explanations_result and explanations_result.explanations:
+            await persist_invoice_explanations(
+                session,
+                farm_id=farm_id,
+                invoice_id=invoice_id,
+                explanations=explanations_result.explanations,
+                alert_id_map=alert_id_map,
+            )
+    else:
+        # No alerts — clean up stale persisted data from prior runs
+        await delete_explanations_by_invoice_id(
+            session, invoice_id=invoice_id, farm_id=farm_id
+        )
+        await delete_alerts_by_invoice_id(
+            session, invoice_id=invoice_id, farm_id=farm_id
         )
 
     # ── Step 9: Status Resolution ───────────────────────────────────

@@ -8,9 +8,12 @@ from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from farm_copilot.api import result_cache
 from farm_copilot.api.deps import get_db
 from farm_copilot.api.templates import templates
+from farm_copilot.database.invoice_alerts import get_alerts_by_invoice_id
+from farm_copilot.database.invoice_explanations import (
+    get_explanations_by_invoice_id,
+)
 from farm_copilot.database.invoice_intake import get_invoice_shell_by_id
 from farm_copilot.database.invoice_line_items import (
     get_invoice_line_items_by_invoice_id,
@@ -47,21 +50,13 @@ async def invoice_detail(
         session, invoice_id=invoice_id, farm_id=_PILOT_FARM_ID
     )
 
-    # Retrieve cached processing result
-    cached = result_cache.get_result(str(invoice_id))
-
-    alerts = []
-    explanations = []
-    steps = None
-
-    if cached is not None:
-        alerts = getattr(
-            getattr(cached, "alerts_payload", None), "alerts", []
-        ) or []
-        explanations = getattr(
-            getattr(cached, "explanations_payload", None), "explanations", []
-        ) or []
-        steps = getattr(cached, "steps", None)
+    # Load persisted alerts + explanations from DB
+    alert_records = await get_alerts_by_invoice_id(
+        session, invoice_id=invoice_id, farm_id=_PILOT_FARM_ID
+    )
+    explanation_records = await get_explanations_by_invoice_id(
+        session, invoice_id=invoice_id, farm_id=_PILOT_FARM_ID
+    )
 
     return templates.TemplateResponse(
         request=request,
@@ -69,9 +64,9 @@ async def invoice_detail(
         context={
             "invoice": invoice,
             "line_items": line_items,
-            "alerts": alerts,
-            "explanations": explanations,
-            "steps": steps,
+            "alerts": alert_records,
+            "explanations": explanation_records,
+            "steps": None,
         },
     )
 
@@ -83,13 +78,11 @@ async def reprocess_invoice(
 ) -> object:
     """Re-run the full pipeline for an invoice."""
     async with session.begin():
-        result = await resolve_xml_invoice_processing(
+        await resolve_xml_invoice_processing(
             session,
             invoice_id=invoice_id,
             farm_id=_PILOT_FARM_ID,
         )
-
-    result_cache.set_result(str(invoice_id), result)
 
     return RedirectResponse(
         url=f"/invoice/{invoice_id}",
@@ -107,7 +100,7 @@ async def correct_line(
 ) -> object:
     """Apply a line correction (manual product assignment)."""
     async with session.begin():
-        correction_result = await apply_unresolved_line_correction(
+        await apply_unresolved_line_correction(
             session,
             invoice_id=invoice_id,
             farm_id=_PILOT_FARM_ID,
@@ -116,12 +109,6 @@ async def correct_line(
             actor="web_ui",
             reason=reason or None,
         )
-
-    # Update cached alerts/explanations if correction was applied
-    if correction_result.kind == "applied":
-        existing = result_cache.get_result(str(invoice_id))
-        if existing is not None and hasattr(correction_result, "alerts_rerun"):
-            result_cache.set_result(str(invoice_id), correction_result)
 
     return RedirectResponse(
         url=f"/invoice/{invoice_id}",

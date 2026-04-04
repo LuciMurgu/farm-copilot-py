@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 20 — ANAF OAuth flow — ANAF INTEGRATION COMPLETE)
+2026-04-04 (Prompt 21 — Alert + explanation persistence)
 
 ---
 
@@ -185,6 +185,21 @@ Update this file at the end of every meaningful session.
 
 > **ANAF SPV Integration — COMPLETE.** 4 prompts (17–20): encrypted token storage, resilient HTTP client, automated sync engine, OAuth web flow. Farmers connect via USB digital certificate and receive automatic invoice ingestion.
 
+### Alert + explanation persistence
+
+| Item | Status |
+|------|--------|
+| InvoiceAlertRecord model | `database/models.py` — 14 tables total |
+| InvoiceExplanationRecord model | `database/models.py` — FK to invoice_alerts |
+| Alembic migration | `migrations/versions/b2c3d4e5f6a7` |
+| Alert CRUD | `database/invoice_alerts.py` — 3 functions (persist, get, delete) |
+| Explanation CRUD | `database/invoice_explanations.py` — 3 functions (persist, get, delete) |
+| Pipeline step 8.5 | `worker/xml_invoice_processing.py` — persists after derivation |
+| Invoice detail route | Reads alerts/explanations from DB, not cache |
+| result_cache.py | **DELETED** — zero ephemeral state |
+| Tests | 7 serialization tests |
+| **Total** | **286 unit + 11 integration (skipped without DATABASE_URL)** |
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -217,6 +232,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 21** — Alert persistence (DB tables for alerts/explanations)
-2. **Prompt 22** — Pilot deployment prep (Docker, env config)
-3. **Prompt 23** — Additional pipeline features (fuzzy normalization)
+1. **Prompt 22** — Pilot deployment prep (Docker, env config)
+2. **Prompt 23** — Additional pipeline features (fuzzy normalization)
+3. **Prompt 24** — Authentication + multi-farm support

@@ -117,3 +117,10 @@ Copy and fill in when adding a new decision:
 - **Reason:** Simple, stateless (from caller's perspective), and sufficient for pilot deployment on a single server. The state parameter is a 32-byte cryptographically random token that prevents cross-site request forgery on the OAuth callback endpoint.
 - **Alternatives rejected:** Database-backed session store (too heavy for MVP), signed cookies (adds complexity without benefit for single-server), no CSRF protection (security risk).
 
+### DEC-0014 — Alerts and explanations persisted to dedicated DB tables
+
+- **Date:** 2026-04-04
+- **Decision:** Alerts and explanations persisted to dedicated DB tables (`invoice_alerts`, `invoice_explanations`). Typed evidence serialized to JSONB via `dataclasses.asdict()` at persistence boundary. Replace pattern (delete + re-insert) used for idempotent reprocessing. `result_cache.py` eliminated — zero ephemeral state.
+- **Reason:** Alerts and explanations must survive server restarts to be useful in production. JSONB serialization at the persistence boundary preserves domain purity (typed evidence dataclasses in domain, untyped dicts in DB). Replace pattern ensures re-processing is idempotent without merge complexity.
+- **Alternatives rejected:** In-memory cache (volatile, doesn't survive restarts), upsert-by-key (complex merge logic for nested evidence), separate microservice (unnecessary for MVP).
+
