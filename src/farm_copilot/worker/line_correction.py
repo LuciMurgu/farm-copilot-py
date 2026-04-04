@@ -1,7 +1,8 @@
-"""Line correction shim — apply correction + re-validate."""
+"""Line correction shim — apply correction + auto-alias + re-validate."""
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Literal
 from uuid import UUID
@@ -15,6 +16,7 @@ from farm_copilot.database.invoice_line_normalization import (
 )
 from farm_copilot.database.invoice_status import update_invoice_status
 from farm_copilot.database.line_corrections import insert_line_correction
+from farm_copilot.database.product_aliases import create_alias_if_not_exists
 from farm_copilot.domain.alert_derivation import InvoiceAlertsResult
 from farm_copilot.domain.explanation_derivation import InvoiceExplanationsResult
 from farm_copilot.worker.alert_derivation import derive_alerts_from_validation
@@ -26,6 +28,8 @@ from farm_copilot.worker.invoice_validation import (
     resolve_invoice_validation,
 )
 
+logger = logging.getLogger(__name__)
+
 # ---------------------------------------------------------------------------
 # Result types
 # ---------------------------------------------------------------------------
@@ -36,6 +40,8 @@ class LineCorrectionApplied:
     kind: Literal["applied"] = "applied"
     line_item_id: str = ""
     new_canonical_product_id: str = ""
+    alias_created: bool = False
+    alias_text: str | None = None
     validation_rerun: InvoiceValidationStepResult | None = None
     alerts_rerun: InvoiceAlertsResult | None = None
     explanations_rerun: InvoiceExplanationsResult | None = None
@@ -130,6 +136,32 @@ async def apply_unresolved_line_correction(
         method="manual_correction",
     )
 
+    # 5.5 Auto-create alias from correction
+    alias_created = False
+    alias_text_out: str | None = None
+    if line_item.raw_description:
+        supplier_id = invoice.supplier_id
+        alias, was_created = await create_alias_if_not_exists(
+            session,
+            canonical_product_id=new_canonical_product_id,
+            alias_text=line_item.raw_description,
+            farm_id=farm_id,
+            supplier_id=supplier_id,
+            source="manual_correction",
+        )
+        alias_created = was_created
+        if alias is not None:
+            alias_text_out = alias.alias_text
+        if was_created:
+            logger.info(
+                "Auto-created alias: '%s' → product %s "
+                "(farm=%s, supplier=%s)",
+                line_item.raw_description,
+                new_canonical_product_id,
+                farm_id,
+                supplier_id,
+            )
+
     # 6. Re-run validation
     validation_result = await resolve_invoice_validation(
         session, invoice_id=invoice_id, farm_id=farm_id
@@ -171,6 +203,8 @@ async def apply_unresolved_line_correction(
     return LineCorrectionApplied(
         line_item_id=str(line_item_id),
         new_canonical_product_id=str(new_canonical_product_id),
+        alias_created=alias_created,
+        alias_text=alias_text_out,
         validation_rerun=validation_result,
         alerts_rerun=alerts_result,
         explanations_rerun=explanations_result,

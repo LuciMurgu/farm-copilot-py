@@ -359,6 +359,20 @@ Update this file at the end of every meaningful session.
 | Tests | 16 tests (`tests/worker/test_embedding_service.py`) |
 | **Total** | **469 unit + 11 integration** |
 
+### Auto-alias creation from corrections
+
+> Every correction permanently teaches the system. Same product description auto-resolves on future invoices.
+
+| Item | Status |
+|------|--------|
+| `product_aliases.py` | `_normalize_alias_text` (lowercase, collapse WS) + `create_alias_if_not_exists` (check-then-insert) |
+| `line_correction.py` | Step 5.5: auto-create alias after correction. `LineCorrectionApplied` has `alias_created` + `alias_text` |
+| `invoice.py` route | Passes `?corrected=1&alias_created=1` as flash params on redirect |
+| `invoice_detail.html` | Green banner: "Alias creat — descrierea se va potrivi automat data viitoare" |
+| Scope | Farm+supplier (tier 0) when supplier_id available, farm-only (tier 1) otherwise |
+| Tests | 15 tests (`tests/test_auto_alias.py`) |
+| **Total** | **484 unit + 11 integration** |
+
 ---
 
 ## Deferred
@@ -367,7 +381,6 @@ Update this file at the end of every meaningful session.
 |------|--------|
 | OCR extraction adapter | ADR 0002 decided provider; not implemented |
 | Already-mapped line reassignment | Needs stock reversal logic |
-| Alias creation from corrections | Designed but deferred |
 | Queue/workflow engine | Direct invocation only |
 | Eval cases | Framework spec only |
 

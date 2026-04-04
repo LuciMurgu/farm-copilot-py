@@ -163,7 +163,7 @@ async def correct_line(
         return RedirectResponse(url="/login", status_code=302)
 
     async with session.begin():
-        await apply_unresolved_line_correction(
+        result = await apply_unresolved_line_correction(
             session,
             invoice_id=invoice_id,
             farm_id=farm_id,
@@ -173,7 +173,12 @@ async def correct_line(
             reason=reason or None,
         )
 
+    # Build redirect URL with flash params
+    redirect_url = f"/invoice/{invoice_id}?corrected=1"
+    if hasattr(result, "alias_created") and result.alias_created:
+        redirect_url += "&alias_created=1"
+
     return RedirectResponse(
-        url=f"/invoice/{invoice_id}",
+        url=redirect_url,
         status_code=303,
     )

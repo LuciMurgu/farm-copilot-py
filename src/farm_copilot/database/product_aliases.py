@@ -175,3 +175,79 @@ async def list_precedence_ordered_visible_aliases(
         stmt = stmt.limit(limit)
     result = await session.execute(stmt)
     return list(result.scalars().all())
+
+
+# ---------------------------------------------------------------------------
+# Alias creation helpers
+# ---------------------------------------------------------------------------
+
+
+def _normalize_alias_text(text: str) -> str:
+    """Normalize alias text for storage and matching.
+
+    Lowercase, strip, collapse whitespace.
+    """
+    return " ".join(text.lower().strip().split())
+
+
+async def create_alias_if_not_exists(
+    session: AsyncSession,
+    *,
+    canonical_product_id: UUID,
+    alias_text: str,
+    farm_id: UUID | None = None,
+    supplier_id: UUID | None = None,
+    source: str = "manual_correction",
+) -> tuple[ProductAlias | None, bool]:
+    """Create a product alias if one doesn't already exist for this
+    exact ``(alias_text, canonical_product_id, farm_id, supplier_id)`` combo.
+
+    Returns ``(alias, created)`` where:
+
+    - ``(alias, True)`` = new alias created
+    - ``(alias, False)`` = alias already existed
+    - ``(None, False)`` = alias_text is empty/None
+
+    The alias is scoped:
+
+    - If ``farm_id`` + ``supplier_id`` → tier 0 (farm+supplier specific)
+    - If ``farm_id`` only → tier 1 (farm specific)
+    - If neither → tier 3 (global)
+    """
+    if not alias_text or not alias_text.strip():
+        return None, False
+
+    normalized = _normalize_alias_text(alias_text)
+
+    # Check for existing alias with same scope
+    filters = [
+        ProductAlias.alias_text == normalized,
+        ProductAlias.canonical_product_id == canonical_product_id,
+    ]
+    if farm_id is not None:
+        filters.append(ProductAlias.farm_id == farm_id)
+    else:
+        filters.append(ProductAlias.farm_id.is_(None))
+    if supplier_id is not None:
+        filters.append(ProductAlias.supplier_id == supplier_id)
+    else:
+        filters.append(ProductAlias.supplier_id.is_(None))
+
+    result = await session.execute(
+        select(ProductAlias).where(*filters).limit(1)
+    )
+    existing = result.scalar_one_or_none()
+    if existing is not None:
+        return existing, False
+
+    # Create new alias
+    alias = ProductAlias(
+        canonical_product_id=canonical_product_id,
+        alias_text=normalized,
+        farm_id=farm_id,
+        supplier_id=supplier_id,
+        source=source,
+    )
+    session.add(alias)
+    await session.flush()
+    return alias, True

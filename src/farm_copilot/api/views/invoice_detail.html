@@ -19,6 +19,17 @@
     {% endif %}
 </div>
 
+<!-- Correction feedback banner -->
+{% if request.query_params.get('corrected') %}
+<div style="background: var(--green-50, #e8f5e9); border-left: 4px solid var(--green-600, #2e7d32); padding: 0.75rem 1rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem;">
+    {% if request.query_params.get('alias_created') %}
+        ✅ Corectare aplicată. Alias creat — descrierea se va potrivi automat data viitoare.
+    {% else %}
+        ✅ Corectare aplicată. Alias-ul exista deja.
+    {% endif %}
+</div>
+{% endif %}
+
 <!-- Invoice Header -->
 <div class="card">
     <h2>Header</h2>
