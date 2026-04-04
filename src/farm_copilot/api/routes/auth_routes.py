@@ -10,10 +10,10 @@ from farm_copilot.api.auth import (
     create_farm_with_owner,
     create_user,
     get_user_by_email,
-    get_user_by_id,
     get_user_farms,
     verify_password,
 )
+from farm_copilot.api.dashboard import build_dashboard_data
 from farm_copilot.api.deps import get_current_farm_id, get_current_user_id, get_db
 from farm_copilot.api.templates import templates
 
@@ -167,20 +167,23 @@ async def dashboard(
     request: Request,
     session: AsyncSession = Depends(get_db),
 ) -> HTMLResponse:
-    """Farm dashboard — the main home page after login."""
-    user_id = get_current_user_id(request)
+    """Farm dashboard — daily action feed."""
     farm_id = get_current_farm_id(request)
+    if farm_id is None:
+        return RedirectResponse(url="/login", status_code=302)  # type: ignore[return-value]
 
-    user = await get_user_by_id(session, user_id=user_id) if user_id else None
-    user_name = user.name if user else "Farmer"
+    user_name = request.session.get("user_name", "Farmer")
     farm_name = request.session.get("farm_name", "My Farm")
+
+    data = await build_dashboard_data(
+        session,
+        farm_id=farm_id,
+        farm_name=farm_name,
+        user_name=user_name,
+    )
 
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
-        context={
-            "user_name": user_name,
-            "farm_name": farm_name,
-            "farm_id": str(farm_id) if farm_id else "",
-        },
+        context={"data": data},
     )

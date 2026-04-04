@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 25 — Invoice list view)
+2026-04-04 (Prompt 26 — Dashboard action feed)
 
 ---
 
@@ -260,7 +260,20 @@ Update this file at the end of every meaningful session.
 | `invoice_list.html` | Status tabs, table, alert badges, pagination, empty state |
 | Navigation | Layout nav + dashboard card link to `/invoices` |
 | Tests | 4 invoice list tests |
-| **Total** | **309 unit + 11 integration** |
+
+### Dashboard action feed
+
+> Daily action feed with prioritized items, stats row, ANAF status, alert counts.
+
+| Item | Status |
+|------|--------|
+| `api/dashboard.py` | `DashboardData` + `build_dashboard_data` + 6 action sources |
+| Dashboard route | Updated to use `build_dashboard_data` |
+| `dashboard.html` | Stats row + action feed + quick actions |
+| CSS | Stats row, action feed, priority color borders in `layout.html` |
+| Action sources | Critical alerts, warnings, reviews, token expiry, ANAF connect, sync results |
+| Tests | 5 dashboard tests |
+| **Total** | **315 unit + 11 integration** |
 
 ---
 

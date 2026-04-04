@@ -153,6 +153,8 @@ __all__ = [
     "insert_invoice_shell",
     "get_invoice_shell_by_id",
     "get_uploaded_document_by_id",
+    "list_invoices_by_farm",
+    "count_invoices_by_status",
     # Query helpers — invoice extraction
     "get_invoice_for_extraction_by_id",
     "update_invoice_extraction",
@@ -193,6 +195,7 @@ __all__ = [
     "persist_invoice_alerts",
     "get_alerts_by_invoice_id",
     "delete_alerts_by_invoice_id",
+    "count_alerts_by_invoice_ids",
     # Query helpers — invoice explanations
     "persist_invoice_explanations",
     "get_explanations_by_invoice_id",
