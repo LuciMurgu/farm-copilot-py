@@ -34,8 +34,8 @@ _UPLOAD_DIR = Path("uploads")
 async def upload_page(request: Request) -> object:
     """Render the upload form."""
     return templates.TemplateResponse(
-        "upload.html",
-        {"request": request},
+        request=request,
+        name="upload.html",
     )
 
 
@@ -49,11 +49,9 @@ async def upload_invoice(
     # 1. Validate file
     if not file.filename or not file.filename.lower().endswith(".xml"):
         return templates.TemplateResponse(
-            "upload.html",
-            {
-                "request": request,
-                "error": "Only XML files are supported.",
-            },
+            request=request,
+            name="upload.html",
+            context={"error": "Only XML files are supported."},
             status_code=400,
         )
 

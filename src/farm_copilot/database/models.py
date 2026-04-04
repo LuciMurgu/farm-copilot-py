@@ -74,6 +74,11 @@ class CorrectionKind(enum.StrEnum):
     CANONICAL_PRODUCT_REASSIGNMENT = "canonical_product_reassignment"
 
 
+def _enum_values(enum_cls: type[enum.StrEnum]) -> list[str]:
+    """Return enum member values — used as ``values_callable`` for SA Enum."""
+    return [e.value for e in enum_cls]
+
+
 # ---------------------------------------------------------------------------
 # Base
 # ---------------------------------------------------------------------------
@@ -178,7 +183,12 @@ class UploadedDocument(Base):
         UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
     )
     source_type: Mapped[SourceType] = mapped_column(
-        Enum(SourceType, name="source_type", create_constraint=True),
+        Enum(
+            SourceType,
+            name="source_type",
+            create_constraint=True,
+            values_callable=_enum_values,
+        ),
         nullable=False,
     )
     original_filename: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -226,7 +236,12 @@ class Invoice(Base):
         UUID(as_uuid=True), nullable=True
     )
     status: Mapped[InvoiceStatus] = mapped_column(
-        Enum(InvoiceStatus, name="invoice_status", create_constraint=True),
+        Enum(
+            InvoiceStatus,
+            name="invoice_status",
+            create_constraint=True,
+            values_callable=_enum_values,
+        ),
         nullable=False,
         server_default=InvoiceStatus.UPLOADED.value,
     )
@@ -297,7 +312,12 @@ class InvoiceLineItem(Base):
     tax_rate: Mapped[Decimal | None] = mapped_column(Numeric(5, 2), nullable=True)
     tax_amount: Mapped[Decimal | None] = mapped_column(Numeric(15, 2), nullable=True)
     line_classification: Mapped[LineClassification | None] = mapped_column(
-        Enum(LineClassification, name="line_classification", create_constraint=True),
+        Enum(
+            LineClassification,
+            name="line_classification",
+            create_constraint=True,
+            values_callable=_enum_values,
+        ),
         nullable=True,
     )
     canonical_product_id: Mapped[uuid.UUID | None] = mapped_column(
@@ -363,7 +383,12 @@ class BenchmarkObservation(Base):
         UUID(as_uuid=True), ForeignKey("canonical_products.id"), nullable=False
     )
     source_kind: Mapped[BenchmarkSourceKind] = mapped_column(
-        Enum(BenchmarkSourceKind, name="benchmark_source_kind", create_constraint=True),
+        Enum(
+            BenchmarkSourceKind,
+            name="benchmark_source_kind",
+            create_constraint=True,
+            values_callable=_enum_values,
+        ),
         nullable=False,
     )
     invoice_id: Mapped[uuid.UUID | None] = mapped_column(
@@ -414,7 +439,12 @@ class StockMovement(Base):
         UUID(as_uuid=True), ForeignKey("canonical_products.id"), nullable=False
     )
     direction: Mapped[StockMovementDirection] = mapped_column(
-        Enum(StockMovementDirection, name="stock_movement_direction", create_constraint=True),
+        Enum(
+            StockMovementDirection,
+            name="stock_movement_direction",
+            create_constraint=True,
+            values_callable=_enum_values,
+        ),
         nullable=False,
     )
     quantity: Mapped[Decimal] = mapped_column(Numeric(15, 4), nullable=False)
@@ -459,7 +489,12 @@ class LineCorrection(Base):
         UUID(as_uuid=True), ForeignKey("invoice_line_items.id"), nullable=False
     )
     correction_kind: Mapped[CorrectionKind] = mapped_column(
-        Enum(CorrectionKind, name="correction_kind", create_constraint=True),
+        Enum(
+            CorrectionKind,
+            name="correction_kind",
+            create_constraint=True,
+            values_callable=_enum_values,
+        ),
         nullable=False,
     )
     previous_canonical_product_id: Mapped[uuid.UUID | None] = mapped_column(

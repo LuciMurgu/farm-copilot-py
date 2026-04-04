@@ -37,8 +37,9 @@ async def invoice_detail(
     )
     if invoice is None:
         return templates.TemplateResponse(
-            "upload.html",
-            {"request": request, "error": "Invoice not found."},
+            request=request,
+            name="upload.html",
+            context={"error": "Invoice not found."},
             status_code=404,
         )
 
@@ -63,9 +64,9 @@ async def invoice_detail(
         steps = getattr(cached, "steps", None)
 
     return templates.TemplateResponse(
-        "invoice_detail.html",
-        {
-            "request": request,
+        request=request,
+        name="invoice_detail.html",
+        context={
             "invoice": invoice,
             "line_items": line_items,
             "alerts": alerts,
