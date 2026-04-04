@@ -1,5 +1,12 @@
 """Database package — models, session factory, and query helpers."""
 
+from .anaf_sync_log import (
+    complete_sync_log,
+    get_last_successful_sync,
+    insert_sync_log,
+    is_already_downloaded,
+    list_sync_logs,
+)
 from .anaf_tokens import (
     delete_anaf_token,
     get_anaf_token_by_farm,
@@ -40,6 +47,7 @@ from .line_corrections import (
     list_line_corrections_by_line_item_id,
 )
 from .models import (
+    AnafSyncLog,
     AnafToken,
     Base,
     BenchmarkObservation,
@@ -94,6 +102,7 @@ __all__ = [
     "StockMovement",
     "LineCorrection",
     "AnafToken",
+    "AnafSyncLog",
     # Session
     "get_db",
     "get_engine",
@@ -108,6 +117,12 @@ __all__ = [
     "update_refreshed_tokens",
     "delete_anaf_token",
     "needs_refresh",
+    # Query helpers — ANAF sync log
+    "insert_sync_log",
+    "complete_sync_log",
+    "is_already_downloaded",
+    "get_last_successful_sync",
+    "list_sync_logs",
     # Query helpers — invoice intake
     "insert_uploaded_document",
     "insert_invoice_shell",

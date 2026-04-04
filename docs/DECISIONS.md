@@ -103,3 +103,10 @@ Copy and fill in when adding a new decision:
 - **Reason:** ANAF APIs are notoriously unstable. Retry with jitter prevents thundering herd. Circuit breaker prevents cascading failures when ANAF is down. SHA-256 hashing enables tamper-evident audit logs without storing full response bodies.
 - **Alternatives rejected:** Fixed retry delays (thundering herd risk), no circuit breaker (cascading failures), third-party resilience library (unnecessary dependency for 3-state machine).
 
+### DEC-0012 — ANAF sync uses id_descarcare as deduplication key
+
+- **Date:** 2026-04-04
+- **Decision:** ANAF sync uses `id_descarcare` as deduplication key with unique constraint on `(farm_id, anaf_id_descarcare)`. Polling window starts from last successful sync minus 1 day (overlap for safety), capped at 60 days (ANAF retention limit). End time uses 10-minute buffer to avoid clock sync issues.
+- **Reason:** `id_descarcare` is ANAF's unique identifier for downloadable documents. The 1-day overlap ensures no messages are missed during edge cases (clock drift, partial failures). 60-day cap matches ANAF's retention policy. 10-minute buffer prevents race conditions between our clock and ANAF's server clock.
+- **Alternatives rejected:** Message ID as dedup key (not always unique across document types), hash-based dedup (requires downloading first), no overlap (risk of missing messages at window boundaries).
+

@@ -1,6 +1,7 @@
 """Worker package — shims bridging domain logic and database persistence."""
 
 from .alert_derivation import derive_alerts_from_validation
+from .anaf_sync import run_anaf_sync
 from .benchmark_comparison import resolve_benchmark_comparison
 from .efactura_parser import parse_efactura_xml
 from .exact_normalization import resolve_exact_normalization
@@ -42,4 +43,7 @@ __all__ = [
     # Pipeline orchestrator
     "resolve_xml_invoice_processing",
     "run_xml_invoice_processing",
+    # ANAF sync
+    "run_anaf_sync",
 ]
+

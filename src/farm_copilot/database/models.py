@@ -548,3 +548,46 @@ class AnafToken(Base):
     created_at: Mapped[datetime] = _created_at()
     updated_at: Mapped[datetime] = _updated_at()
 
+
+# ---------------------------------------------------------------------------
+# 12. anaf_sync_log
+# ---------------------------------------------------------------------------
+
+
+class AnafSyncLog(Base):
+    __tablename__ = "anaf_sync_log"
+    __table_args__ = (
+        UniqueConstraint(
+            "farm_id",
+            "anaf_id_descarcare",
+            name="uq_anaf_sync_log_farm_descarcare",
+        ),
+        Index("ix_anaf_sync_log_farm_id", "farm_id"),
+        Index("ix_anaf_sync_log_started_at", "started_at"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    sync_type: Mapped[str] = mapped_column(String, nullable=False)
+    anaf_message_id: Mapped[str | None] = mapped_column(
+        String, nullable=True
+    )
+    anaf_id_descarcare: Mapped[str | None] = mapped_column(
+        String, nullable=True
+    )
+    invoice_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("invoices.id"), nullable=True
+    )
+    status: Mapped[str] = mapped_column(String, nullable=False)
+    error_details: Mapped[str | None] = mapped_column(Text, nullable=True)
+    raw_response_hash: Mapped[str | None] = mapped_column(
+        String, nullable=True
+    )
+    started_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=True
+    )

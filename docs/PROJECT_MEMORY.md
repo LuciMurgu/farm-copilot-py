@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 18 — ANAF HTTP client)
+2026-04-04 (Prompt 19 — SPV ingestion pipeline)
 
 ---
 
@@ -161,6 +161,17 @@ Update this file at the end of every meaningful session.
 | Client tests | `tests/worker/test_anaf_client.py` — 7 tests (MockTransport, no real HTTP) |
 | **Total** | **264 unit + 11 integration (skipped without DATABASE_URL)** |
 
+### ANAF SPV ingestion pipeline
+
+| Item | Status |
+|------|--------|
+| AnafSyncLog model | `database/models.py` — sync audit log, unique (farm_id, anaf_id_descarcare) |
+| Alembic migration | `migrations/versions/a1b2c3d4e5f6` — anaf_sync_log table |
+| Sync log CRUD | `database/anaf_sync_log.py` — 5 functions (insert, complete, is_already_downloaded, get_last_successful_sync, list) |
+| Sync engine | `worker/anaf_sync.py` — full orchestrator: token refresh, polling window, pagination, ZIP extraction, dedup, pipeline reuse |
+| Sync tests | `tests/worker/test_anaf_sync.py` — 9 tests (ZIP extraction + polling window) |
+| **Total** | **273 unit + 11 integration (skipped without DATABASE_URL)** |
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -193,6 +204,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 19** — ANAF SPV API integration (download invoices, sync flow)
-2. **Prompt 20** — Pilot deployment prep (Docker, env config)
-3. **Prompt 21** — Additional pipeline features (fuzzy normalization)
+1. **Prompt 20** — ANAF OAuth web flow (UI for token configuration)
+2. **Prompt 21** — Pilot deployment prep (Docker, env config)
+3. **Prompt 22** — Additional pipeline features (fuzzy normalization)
