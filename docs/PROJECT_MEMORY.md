@@ -373,6 +373,18 @@ Update this file at the end of every meaningful session.
 | Tests | 15 tests (`tests/test_auto_alias.py`) |
 | **Total** | **484 unit + 11 integration** |
 
+### Pre-seeded Romanian agricultural product catalog
+
+> 28 canonical products, 150+ aliases. Covers fertilizers, pesticides, seeds, fuel. Global scope. Auto-seeds on first empty startup.
+
+| Item | Status |
+|------|--------|
+| `database/seed_catalog.py` | 28 products × 7 categories, 150+ aliases, idempotent seed function |
+| `api/production.py` | `seed_catalog_if_empty()` — auto-seeds on first startup if catalog empty |
+| CLI | `uv run python -m farm_copilot.database.seed_catalog` |
+| Tests | 10 tests (`tests/test_seed_catalog.py`) |
+| **Total** | **494 unit + 11 integration** |
+
 ---
 
 ## Deferred
@@ -388,6 +400,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 30** — Fuzzy normalization domain logic + worker (matching engine)
-2. **Prompt 31** — Pipeline integration + UI for candidate selection
-3. **Prompt 32** — Next.js SPA frontend consuming /api/v1
+1. **Prompt 31** — Fuzzy normalization domain logic + worker (matching engine)
+2. **Prompt 32** — Pipeline integration + UI for candidate selection
+3. **Prompt 33** — Next.js SPA frontend consuming /api/v1

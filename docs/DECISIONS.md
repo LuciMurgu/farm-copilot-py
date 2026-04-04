@@ -165,3 +165,11 @@ Copy and fill in when adding a new decision:
 - **Decision:** When a farmer corrects an unresolved line item (manual product assignment), the system automatically creates a product alias from the line's `raw_description` to the assigned canonical product. Alias text is normalized (lowercase, collapsed whitespace). Alias is scoped to farm+supplier (tier 0) when `supplier_id` is available on the invoice, farm-only (tier 1) otherwise. Source tagged as `"manual_correction"` for traceability. Duplicates are prevented via check-then-insert.
 - **Reason:** This is the correction loop competitive moat. Every correction permanently teaches the system — same description auto-resolves on future invoices. After ~100 invoices from the same suppliers, most products resolve via exact alias. Zero new dependencies, zero ML.
 - **Alternatives rejected:** Global aliases (tier 3) from corrections (too aggressive — same text could mean different products for different suppliers), batch alias generation (unnecessary complexity — on-the-fly is simpler and immediate).
+
+### DEC-0021 — Ship with pre-seeded catalog of 28 Romanian agricultural products and 150+ aliases
+
+- **Date:** 2026-04-05
+- **Decision:** Ship with a pre-loaded catalog of 28 canonical products across 7 categories (fertilizers, herbicides, fungicides, insecticides, seeds, fuel, services) and 150+ aliases covering Romanian, English, and brand name variations. All at global scope (tier 3). Auto-seeds on first startup via `seed_catalog_if_empty()`. Idempotent — re-running skips existing products. Farm-specific corrections override via tier 0-1 precedence.
+- **Reason:** New farmers see 60-80% of common line items auto-resolve on day one instead of seeing 100% unresolved. Dramatically improves first-use experience. Zero cost — static data, no ML, no API calls.
+- **Alternatives rejected:** Empty catalog (terrible first experience), LLM-generated catalog (hallucination risk), external product database API (unnecessary complexity and dependency).
+
