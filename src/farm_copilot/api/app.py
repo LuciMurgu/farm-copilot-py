@@ -10,6 +10,7 @@ from fastapi.staticfiles import StaticFiles
 
 from farm_copilot.api.logging_config import setup_logging
 from farm_copilot.api.routes.anaf import router as anaf_router
+from farm_copilot.api.routes.health import router as health_router
 from farm_copilot.api.routes.invoice import router as invoice_router
 from farm_copilot.api.routes.upload import router as upload_router
 from farm_copilot.api.templates import STATIC_DIR
@@ -38,6 +39,7 @@ def create_app() -> FastAPI:
     application.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
     # Routes
+    application.include_router(health_router)
     application.include_router(upload_router)
     application.include_router(invoice_router)
     application.include_router(anaf_router)

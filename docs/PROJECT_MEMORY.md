@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 22 — Scheduled auto-sync background job)
+2026-04-04 (Prompt 23 — Deployment prep — PRODUCTION-DEPLOYABLE)
 
 ---
 
@@ -214,6 +214,23 @@ Update this file at the end of every meaningful session.
 | Env config | `ANAF_SYNC_ENABLED`, `ANAF_SYNC_INTERVAL_SECONDS`, `ANAF_SYNC_INITIAL_DELAY_SECONDS` |
 | Tests | 7 scheduler tests |
 
+### Deployment infrastructure
+
+> **Production-deployable via Docker Compose.** Single VPS deployment with `docker compose up`. Nginx reference config provided. Auto-migrations on startup.
+
+| Item | Status |
+|------|--------|
+| `Dockerfile` | Multi-stage build, non-root user, health check |
+| `docker-compose.yml` | App + PostgreSQL 16, health checks, named volumes |
+| `api/production.py` | Auto-migrations + uvicorn (workers=1) |
+| `api/routes/health.py` | `/health` endpoint with DB connectivity check |
+| `.env.production.example` | Full production config template |
+| `deploy/nginx.conf` | Reference reverse proxy config (HTTPS + security headers) |
+| `.dockerignore` | Lean build context |
+| `README.md` | Dev quickstart + production deployment |
+| Tests | 2 health check tests |
+| **Total** | **295 unit + 11 integration** |
+
 ---
 
 ## Deferred
@@ -231,6 +248,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 23** — Additional pipeline features (fuzzy normalization)
-2. **Prompt 24** — Authentication + multi-farm support
-3. **Prompt 25** — Pilot deployment prep (Docker, env config)
+1. **Prompt 24** — Additional pipeline features (fuzzy normalization)
+2. **Prompt 25** — Authentication + multi-farm support
+3. **Prompt 26** — Monitoring + logging dashboard

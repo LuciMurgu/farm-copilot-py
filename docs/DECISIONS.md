@@ -130,3 +130,10 @@ Copy and fill in when adding a new decision:
 - **Decision:** Background ANAF sync uses `asyncio.create_task()` within FastAPI lifespan. No external scheduler dependency (no Celery, no APScheduler). Per-farm error isolation — one farm failing does not block others. Configurable via `ANAF_SYNC_ENABLED`, `ANAF_SYNC_INTERVAL_SECONDS`, `ANAF_SYNC_INITIAL_DELAY_SECONDS` env vars.
 - **Reason:** Keeps deployment simple (single process), avoids dependency on external job schedulers, and leverages the existing asyncio event loop. The 4-hour default interval matches ANAF's typical invoice posting cadence.
 - **Alternatives rejected:** Celery (too heavy for single-farm MVP), APScheduler (unnecessary dependency), cron (external configuration, no error isolation), manual-only sync (defeats zero-data-entry goal).
+
+### DEC-0016 — Single-worker uvicorn in production (workers=1)
+
+- **Date:** 2026-04-04
+- **Decision:** Production uses `workers=1` in uvicorn because the ANAF auto-sync scheduler uses `asyncio.create_task` in-process. Multiple workers would create multiple schedulers, each syncing the same farms. Auto-migrations run before server start via `subprocess.run(["python", "-m", "alembic", "upgrade", "head"])`.
+- **Reason:** Keeps deployment simple and prevents duplicate sync operations. The single-process architecture is sufficient for pilot-scale traffic (one farmer, occasional invoice uploads).
+- **Alternatives rejected:** Multiple workers with external scheduler (premature complexity), Gunicorn with preload (scheduler lifecycle issues), separate migration container (extra Docker complexity for pilot).

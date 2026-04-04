@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: farm_copilot
+      POSTGRES_USER: farm_copilot
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U farm_copilot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://farm_copilot:${DB_PASSWORD:-changeme}@db:5432/farm_copilot
+      ANAF_ENCRYPTION_KEY: ${ANAF_ENCRYPTION_KEY}
+      ANAF_CLIENT_ID: ${ANAF_CLIENT_ID:-}
+      ANAF_CLIENT_SECRET: ${ANAF_CLIENT_SECRET:-}
+      ANAF_REDIRECT_URI: ${ANAF_REDIRECT_URI:-http://localhost:8000/anaf/callback}
+      ANAF_TEST_MODE: ${ANAF_TEST_MODE:-true}
+      ANAF_SYNC_ENABLED: ${ANAF_SYNC_ENABLED:-true}
+      ANAF_SYNC_INTERVAL_SECONDS: ${ANAF_SYNC_INTERVAL_SECONDS:-14400}
+      ENV: production
+    volumes:
+      - uploads:/app/uploads
+      - anaf_downloads:/app/anaf_downloads
+
+volumes:
+  pgdata:
+  uploads:
+  anaf_downloads:
