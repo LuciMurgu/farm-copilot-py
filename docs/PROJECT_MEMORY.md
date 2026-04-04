@@ -202,25 +202,10 @@ Update this file at the end of every meaningful session.
 
 ---
 
-## Not built (to be ported from TypeScript version)
-
-| Item | TS source | Priority |
-|------|-----------|----------|
-| Database query helpers (14 modules) | `packages/database/src/*.ts` | **Next (Prompt 4)** |
-| Domain logic modules (10 modules) | `packages/domain/src/*.ts` | After queries |
-| Worker pipeline (9 steps) | `apps/worker/src/*.ts` | After domain |
-| API routes + views | `apps/web/app/*.ts` | After worker |
-| Contracts (Pydantic models) | `packages/contracts/src/*.ts` | With domain |
-| Tests (294 total in TS) | `packages/domain/tests/`, `apps/worker/tests/` | With each layer |
-
----
-
-## Deferred (same as TypeScript version)
+## Deferred
 
 | Item | Reason |
 |------|--------|
-| Alert persistence (DB table) | Alerts currently in-memory only |
-| Explanation persistence (DB table) | Explanations currently in-memory only |
 | OCR extraction adapter | ADR 0002 decided provider; not implemented |
 | Already-mapped line reassignment | Needs stock reversal logic |
 | Alias creation from corrections | Designed but deferred |
