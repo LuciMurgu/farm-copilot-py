@@ -14,6 +14,7 @@ import uuid
 from datetime import date, datetime
 from decimal import Decimal
 
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     Boolean,
     Date,
@@ -422,6 +423,38 @@ class ProductAlias(Base):
     )
     source: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = _created_at()
+
+
+# ---------------------------------------------------------------------------
+# 7b. product_embeddings
+# ---------------------------------------------------------------------------
+
+
+class ProductEmbedding(Base):
+    __tablename__ = "product_embeddings"
+    __table_args__ = (
+        UniqueConstraint(
+            "canonical_product_id",
+            name="uq_product_embeddings_product",
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    canonical_product_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("canonical_products.id"),
+        nullable=False,
+    )
+    embedding: Mapped[list] = mapped_column(
+        Vector(384), nullable=False,  # all-MiniLM-L6-v2 dimension
+    )
+    model_name: Mapped[str] = mapped_column(
+        String, nullable=False, server_default="all-MiniLM-L6-v2",
+    )
+    text_source: Mapped[str] = mapped_column(
+        Text, nullable=False,
+    )
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
 
 
 # ---------------------------------------------------------------------------

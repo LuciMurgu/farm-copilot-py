@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     restart: unless-stopped
     environment:
       POSTGRES_DB: farm_copilot
@@ -34,6 +34,7 @@ services:
       ANAF_SYNC_ENABLED: ${ANAF_SYNC_ENABLED:-true}
       ANAF_SYNC_INTERVAL_SECONDS: ${ANAF_SYNC_INTERVAL_SECONDS:-14400}
       ENV: production
+      TRANSFORMERS_CACHE: /app/.cache/transformers
     volumes:
       - uploads:/app/uploads
       - anaf_downloads:/app/anaf_downloads

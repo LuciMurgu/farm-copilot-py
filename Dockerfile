@@ -39,7 +39,7 @@ COPY --from=builder /usr/local/bin/uv /usr/local/bin/uv
 
 # Create non-root user
 RUN useradd -m -r appuser && \
-    mkdir -p /app/uploads /app/anaf_downloads && \
+    mkdir -p /app/uploads /app/anaf_downloads /app/.cache/transformers && \
     chown -R appuser:appuser /app
 
 USER appuser
@@ -48,6 +48,7 @@ USER appuser
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH="/app/src"
 ENV PYTHONUNBUFFERED=1
+ENV TRANSFORMERS_CACHE="/app/.cache/transformers"
 
 EXPOSE 8000
 

@@ -342,6 +342,23 @@ Update this file at the end of every meaningful session.
 | Tests | 32 pure-logic tests (`tests/api/test_api_v1.py`) |
 | **Total** | **453 unit + 11 integration** |
 
+### pgvector + product embeddings
+
+> Foundation for fuzzy (embedding-based) normalization fallback.
+
+| Item | Status |
+|------|--------|
+| Dependencies | `pgvector>=0.3`, `sentence-transformers>=3.0` (pulls torch ~2GB) |
+| Model | `all-MiniLM-L6-v2` — 384 dims, CPU-only, ~50ms/embedding |
+| `database/models.py` | `ProductEmbedding` — `Vector(384)`, unique per canonical product |
+| Migration | `d4e5f6a7b8c9` — `CREATE EXTENSION vector` + table |
+| `database/product_embeddings.py` | upsert (ON CONFLICT), get, find_similar (cosine), count |
+| `worker/embedding_service.py` | lazy model loading (`@lru_cache`), generate, batch, build_product_text |
+| `worker/embed_products.py` | Bulk seeder: `uv run python -m farm_copilot.worker.embed_products` |
+| Docker | `pgvector/pgvector:pg16` image, `TRANSFORMERS_CACHE` env |
+| Tests | 16 tests (`tests/worker/test_embedding_service.py`) |
+| **Total** | **469 unit + 11 integration** |
+
 ---
 
 ## Deferred
@@ -358,6 +375,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 30** — Next.js SPA frontend consuming /api/v1
-2. **Prompt 31** — Additional pipeline features (fuzzy normalization)
-3. **Prompt 32** — Farm invitation + multi-user
+1. **Prompt 30** — Fuzzy normalization domain logic + worker (matching engine)
+2. **Prompt 31** — Pipeline integration + UI for candidate selection
+3. **Prompt 32** — Next.js SPA frontend consuming /api/v1
