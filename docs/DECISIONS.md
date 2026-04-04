@@ -74,3 +74,10 @@ Copy and fill in when adding a new decision:
 - **Decision:** Alert evidence uses typed dataclasses per alert kind (`ConfirmedDuplicateEvidence`, `PossibleDuplicateEvidence`, `InvoiceTotalMismatchEvidence`, `SuspiciousOverpaymentEvidence`) instead of untyped `dict[str, unknown]`. Resolves OQ-0009 from the TypeScript version.
 - **Reason:** The TypeScript version used `evidence: Record<string, unknown>` which caused silent breakage when evidence field names were renamed. Typed dataclasses catch field mismatches at definition time and provide IDE autocompletion. This is the key architectural improvement of the Python port.
 - **Alternatives rejected:** Keeping `dict[str, object]` (repeats TypeScript mistake), single generic evidence class (less type safety).
+
+### DEC-0008 — lxml for XML parsing (replaces fast-xml-parser)
+
+- **Date:** 2026-04-04
+- **Decision:** lxml is the XML parsing library for e-Factura UBL 2.1 invoices. The parser uses namespace-aware XPath with a UBL 2.1 namespace map instead of stripping namespace prefixes.
+- **Reason:** Native XPath support, proper namespace handling, future schematron validation capability for CIUS-RO compliance. lxml is the de facto standard for XML processing in Python.
+- **Alternatives rejected:** fast-xml-parser (JS only), xml.etree.ElementTree (no XPath namespace support, limited API), defusedxml (wrapper, not full parser).

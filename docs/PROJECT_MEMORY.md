@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 12b — database query modules complete — DATABASE COMPLETE)
+2026-04-04 (Prompt 13 — e-Factura parser + 236 tests total)
 
 ---
 
@@ -94,6 +94,13 @@ Update this file at the end of every meaningful session.
 | Line corrections | `database/line_corrections.py` — 2 functions (insert + list) |
 | Barrel exports | `database/__init__.py` — all 28 query functions exported |
 
+### Worker layer
+
+| Item | Status |
+|------|--------|
+| e-Factura parser | `worker/efactura_parser.py` — lxml, UBL 2.1 namespaces, 2 error types (DEC-0008) |
+| Parser tests | `tests/worker/test_efactura_parser.py` — 39 tests |
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -126,6 +133,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 13** — Worker pipeline orchestrators
-2. **Prompt 14** — API routes + views
-3. **Prompt 15** — End-to-end XML processing pipeline
+1. **Prompt 14** — Worker pipeline orchestrators
+2. **Prompt 15** — API routes + views
+3. **Prompt 16** — End-to-end XML processing pipeline
