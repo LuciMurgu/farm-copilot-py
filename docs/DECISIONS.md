@@ -110,3 +110,10 @@ Copy and fill in when adding a new decision:
 - **Reason:** `id_descarcare` is ANAF's unique identifier for downloadable documents. The 1-day overlap ensures no messages are missed during edge cases (clock drift, partial failures). 60-day cap matches ANAF's retention policy. 10-minute buffer prevents race conditions between our clock and ANAF's server clock.
 - **Alternatives rejected:** Message ID as dedup key (not always unique across document types), hash-based dedup (requires downloading first), no overlap (risk of missing messages at window boundaries).
 
+### DEC-0013 — ANAF OAuth callback uses module-level state dict for CSRF protection
+
+- **Date:** 2026-04-04
+- **Decision:** ANAF OAuth callback uses module-level state dict for CSRF protection. Acceptable for single-server MVP. Must move to encrypted cookie or server-side session store before horizontal scaling.
+- **Reason:** Simple, stateless (from caller's perspective), and sufficient for pilot deployment on a single server. The state parameter is a 32-byte cryptographically random token that prevents cross-site request forgery on the OAuth callback endpoint.
+- **Alternatives rejected:** Database-backed session store (too heavy for MVP), signed cookies (adds complexity without benefit for single-server), no CSRF protection (security risk).
+

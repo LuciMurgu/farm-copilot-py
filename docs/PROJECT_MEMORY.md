@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 19 — SPV ingestion pipeline)
+2026-04-04 (Prompt 20 — ANAF OAuth flow — ANAF INTEGRATION COMPLETE)
 
 ---
 
@@ -172,6 +172,19 @@ Update this file at the end of every meaningful session.
 | Sync tests | `tests/worker/test_anaf_sync.py` — 9 tests (ZIP extraction + polling window) |
 | **Total** | **273 unit + 11 integration (skipped without DATABASE_URL)** |
 
+### ANAF OAuth flow + API routes — COMPLETE
+
+| Item | Status |
+|------|--------|
+| ANAF settings | `api/anaf_settings.py` — OAuth config from env vars (client_id, secret, redirect_uri, test_mode) |
+| ANAF routes | `api/routes/anaf.py` — 5 handlers (status, authorize, callback, sync, disconnect) |
+| Status template | `api/views/anaf_status.html` — connected/disconnected, flash msgs, sync log table |
+| Route tests | `tests/api/test_anaf_routes.py` — 6 tests (AsyncClient + ASGITransport, no real HTTP) |
+| Navigation | Layout header link to ANAF Connection page |
+| **Total** | **279 unit + 11 integration (skipped without DATABASE_URL)** |
+
+> **ANAF SPV Integration — COMPLETE.** 4 prompts (17–20): encrypted token storage, resilient HTTP client, automated sync engine, OAuth web flow. Farmers connect via USB digital certificate and receive automatic invoice ingestion.
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -204,6 +217,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 20** — ANAF OAuth web flow (UI for token configuration)
-2. **Prompt 21** — Pilot deployment prep (Docker, env config)
-3. **Prompt 22** — Additional pipeline features (fuzzy normalization)
+1. **Prompt 21** — Alert persistence (DB tables for alerts/explanations)
+2. **Prompt 22** — Pilot deployment prep (Docker, env config)
+3. **Prompt 23** — Additional pipeline features (fuzzy normalization)

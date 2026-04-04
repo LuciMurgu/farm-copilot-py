@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from farm_copilot.api.routes.anaf import router as anaf_router
 from farm_copilot.api.routes.invoice import router as invoice_router
 from farm_copilot.api.routes.upload import router as upload_router
 from farm_copilot.api.templates import STATIC_DIR
@@ -24,6 +25,7 @@ def create_app() -> FastAPI:
     # Routes
     application.include_router(upload_router)
     application.include_router(invoice_router)
+    application.include_router(anaf_router)
 
     return application
 
