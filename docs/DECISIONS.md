@@ -96,3 +96,10 @@ Copy and fill in when adding a new decision:
 - **Reason:** ANAF tokens are fiscal credentials — a leaked token pair exposes all invoice data for the farm. Fernet provides authenticated encryption (AES-128-CBC + HMAC-SHA256). 70% threshold prevents token expiry during active API calls.
 - **Alternatives rejected:** Asymmetric encryption (unnecessary complexity for at-rest encryption), vault-based storage (overkill for pilot), no encryption (unacceptable security risk).
 
+### DEC-0011 — ANAF API client uses exponential backoff + circuit breaker
+
+- **Date:** 2026-04-04
+- **Decision:** ANAF API client uses exponential backoff (2s→16s, ±20% jitter, max 5 attempts) + circuit breaker (5 failures → 5min cooldown). 4xx errors are non-retryable. Response bodies hashed (SHA-256) for audit trail integrity. Circuit breaker uses `time.monotonic()` for clock-change immunity.
+- **Reason:** ANAF APIs are notoriously unstable. Retry with jitter prevents thundering herd. Circuit breaker prevents cascading failures when ANAF is down. SHA-256 hashing enables tamper-evident audit logs without storing full response bodies.
+- **Alternatives rejected:** Fixed retry delays (thundering herd risk), no circuit breaker (cascading failures), third-party resilience library (unnecessary dependency for 3-state machine).
+

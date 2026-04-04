@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 17 — ANAF token management)
+2026-04-04 (Prompt 18 — ANAF HTTP client)
 
 ---
 
@@ -151,6 +151,16 @@ Update this file at the end of every meaningful session.
 | Refresh logic tests | `tests/test_anaf_tokens.py` — 6 tests |
 | cryptography dep | `pyproject.toml` — cryptography>=44.0 |
 
+### ANAF HTTP client
+
+| Item | Status |
+|------|--------|
+| Circuit breaker | `worker/circuit_breaker.py` — 3-state (closed/open/half_open), monotonic timing |
+| ANAF client | `worker/anaf_client.py` — 7 API methods + OAuth helpers, retry (2s→16s backoff, ±20% jitter), SHA-256 audit hashing |
+| Circuit breaker tests | `tests/worker/test_circuit_breaker.py` — 10 tests |
+| Client tests | `tests/worker/test_anaf_client.py` — 7 tests (MockTransport, no real HTTP) |
+| **Total** | **264 unit + 11 integration (skipped without DATABASE_URL)** |
+
 ---
 
 ## Not built (to be ported from TypeScript version)
@@ -183,6 +193,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 18** — ANAF SPV API client (OAuth2 flow, invoice download)
-2. **Prompt 19** — Pilot deployment prep (Docker, env config)
-3. **Prompt 20** — Additional pipeline features (fuzzy normalization)
+1. **Prompt 19** — ANAF SPV API integration (download invoices, sync flow)
+2. **Prompt 20** — Pilot deployment prep (Docker, env config)
+3. **Prompt 21** — Additional pipeline features (fuzzy normalization)
