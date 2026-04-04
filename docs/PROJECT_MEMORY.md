@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 14a — worker shims + 236 tests total)
+2026-04-04 (Prompt 14b — pipeline orchestrator — WORKER COMPLETE)
 
 ---
 
@@ -110,7 +110,8 @@ Update this file at the end of every meaningful session.
 | Alert derivation shim | `worker/alert_derivation.py` — thin sync wrapper |
 | Explanation derivation shim | `worker/explanation_derivation.py` — thin sync wrapper |
 | Line correction shim | `worker/line_correction.py` — correction + re-validation |
-| Barrel exports | `worker/__init__.py` — all 13 functions exported |
+| Barrel exports | `worker/__init__.py` — all 15 functions exported |
+| Pipeline orchestrator | `worker/xml_invoice_processing.py` — 9-step sequential processing, short-circuit, status resolution |
 
 ---
 
@@ -144,6 +145,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 14b** — Pipeline orchestrator (full XML processing pipeline)
-2. **Prompt 15** — API routes + views
-3. **Prompt 16** — End-to-end XML processing pipeline
+1. **Prompt 15** — FastAPI app + API routes
+2. **Prompt 16** — Integration tests
+3. **Prompt 17** — End-to-end pipeline tests

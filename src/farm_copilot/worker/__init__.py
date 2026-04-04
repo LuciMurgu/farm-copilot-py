@@ -16,6 +16,10 @@ from .mappers import (
 )
 from .stock_in import resolve_stock_in
 from .xml_extraction import resolve_xml_extraction
+from .xml_invoice_processing import (
+    resolve_xml_invoice_processing,
+    run_xml_invoice_processing,
+)
 
 __all__ = [
     # Parser
@@ -35,4 +39,7 @@ __all__ = [
     "derive_alerts_from_validation",
     "derive_explanations_from_alerts",
     "apply_unresolved_line_correction",
+    # Pipeline orchestrator
+    "resolve_xml_invoice_processing",
+    "run_xml_invoice_processing",
 ]
