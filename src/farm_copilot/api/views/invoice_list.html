@@ -4,7 +4,16 @@
 
 <div class="flex-between mb-2">
     <h1>📋 Invoices</h1>
-    <a href="/upload" class="btn btn-primary">+ Upload Invoice</a>
+    <div style="display:flex; gap:0.5rem;">
+        {% if invoices %}
+        <form action="/export/saga/bulk" method="POST" style="display:inline;">
+            <input type="hidden" name="invoice_ids"
+                   value="{{ invoices | map(attribute='id') | join(',') }}">
+            <button type="submit" class="btn btn-outline">📥 Export {{ invoices | length }} to SAGA</button>
+        </form>
+        {% endif %}
+        <a href="/upload" class="btn btn-primary">+ Upload Invoice</a>
+    </div>
 </div>
 
 {# ── Status filter tabs ── #}

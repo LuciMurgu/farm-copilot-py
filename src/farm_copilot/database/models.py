@@ -139,6 +139,7 @@ class Farm(Base):
 
     id: Mapped[uuid.UUID] = _uuid_pk()
     name: Mapped[str] = mapped_column(String, nullable=False)
+    cif: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = _created_at()
     updated_at: Mapped[datetime] = _updated_at()
 

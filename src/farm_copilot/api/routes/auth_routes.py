@@ -76,6 +76,7 @@ async def login(
         farm, _membership = farms[0]
         request.session["farm_id"] = str(farm.id)
         request.session["farm_name"] = farm.name
+        request.session["farm_cif"] = farm.cif or ""
     request.session["user_name"] = user.name
 
     return RedirectResponse(url="/dashboard", status_code=303)
@@ -140,6 +141,7 @@ async def register(
     request.session["user_id"] = str(user.id)
     request.session["farm_id"] = str(farm.id)
     request.session["farm_name"] = farm.name
+    request.session["farm_cif"] = farm.cif or ""
     request.session["user_name"] = user.name
 
     return RedirectResponse(url="/dashboard", status_code=303)

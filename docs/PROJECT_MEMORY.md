@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 27 — Stock overview)
+2026-04-04 (Prompt 28 — SAGA XML export)
 
 ---
 
@@ -290,7 +290,23 @@ Update this file at the end of every meaningful session.
 | Navigation | Layout nav + dashboard card link to `/stock` |
 | Tests | 5 stock tests |
 | **Product loop** | login → dashboard → invoices → alerts → stock → ANAF sync |
-| **Total** | **321 unit + 11 integration** |
+
+### SAGA XML export
+
+> SAGA-compatible XML export — single and bulk download. Accountant imports via Diverse > Import Date. Romanian diacritics preserved.
+
+| Item | Status |
+|------|--------|
+| `worker/saga_export.py` | `SagaExportInvoice` + `SagaExportLine` dataclasses, lxml XML generator |
+| `generate_saga_xml` | Single invoice → `<Factura>` XML with Antet + Detalii + Sumar |
+| `generate_saga_xml_batch` | Multiple invoices → `<Facturi>` root |
+| `build_saga_export_invoice` | DB-to-SAGA mapper (invoice + line items + supplier) |
+| Farm `cif` field | Migration `1eb8b0707945`, stored in session |
+| `GET /export/saga/{id}` | Single invoice SAGA XML download |
+| `POST /export/saga/bulk` | Bulk export (comma-separated IDs) |
+| UI | “Download for SAGA” on detail, “Export to SAGA” on list |
+| Tests | 11 SAGA XML tests |
+| **Total** | **332 unit + 11 integration** |
 
 ---
 
