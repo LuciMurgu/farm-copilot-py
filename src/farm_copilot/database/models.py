@@ -513,3 +513,38 @@ class LineCorrection(Base):
     actor: Mapped[str | None] = mapped_column(String, nullable=True)
     reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = _created_at()
+
+
+# ---------------------------------------------------------------------------
+# 11. anaf_tokens
+# ---------------------------------------------------------------------------
+
+
+class AnafToken(Base):
+    __tablename__ = "anaf_tokens"
+    __table_args__ = (
+        UniqueConstraint("farm_id", name="uq_anaf_tokens_farm_id"),
+    )
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    farm_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("farms.id"), nullable=False
+    )
+    cif: Mapped[str] = mapped_column(String, nullable=False)
+    client_id: Mapped[str] = mapped_column(String, nullable=False)
+    client_secret_encrypted: Mapped[str] = mapped_column(Text, nullable=False)
+    access_token_encrypted: Mapped[str] = mapped_column(Text, nullable=False)
+    refresh_token_encrypted: Mapped[str] = mapped_column(Text, nullable=False)
+    family_param: Mapped[str | None] = mapped_column(String, nullable=True)
+    access_token_expires_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False
+    )
+    refresh_token_expires_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False
+    )
+    last_refreshed_at: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=True
+    )
+    created_at: Mapped[datetime] = _created_at()
+    updated_at: Mapped[datetime] = _updated_at()
+

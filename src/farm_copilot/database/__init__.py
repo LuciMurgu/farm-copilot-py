@@ -1,5 +1,13 @@
 """Database package — models, session factory, and query helpers."""
 
+from .anaf_tokens import (
+    delete_anaf_token,
+    get_anaf_token_by_farm,
+    get_decrypted_tokens,
+    needs_refresh,
+    update_refreshed_tokens,
+    upsert_anaf_token,
+)
 from .benchmark_observations import (
     insert_benchmark_observation,
     insert_benchmark_observations_batch,
@@ -7,6 +15,7 @@ from .benchmark_observations import (
     list_benchmark_observations_by_provenance,
 )
 from .canonical_products import get_canonical_product_by_id, list_canonical_products
+from .encryption import decrypt_token, encrypt_token
 from .invoice_duplicate_candidates import list_invoice_duplicate_candidates
 from .invoice_extraction import (
     get_invoice_for_extraction_by_id,
@@ -31,6 +40,7 @@ from .line_corrections import (
     list_line_corrections_by_line_item_id,
 )
 from .models import (
+    AnafToken,
     Base,
     BenchmarkObservation,
     BenchmarkSourceKind,
@@ -83,10 +93,21 @@ __all__ = [
     "BenchmarkObservation",
     "StockMovement",
     "LineCorrection",
+    "AnafToken",
     # Session
     "get_db",
     "get_engine",
     "async_session",
+    # Encryption
+    "encrypt_token",
+    "decrypt_token",
+    # Query helpers — ANAF tokens
+    "upsert_anaf_token",
+    "get_anaf_token_by_farm",
+    "get_decrypted_tokens",
+    "update_refreshed_tokens",
+    "delete_anaf_token",
+    "needs_refresh",
     # Query helpers — invoice intake
     "insert_uploaded_document",
     "insert_invoice_shell",
@@ -129,4 +150,3 @@ __all__ = [
     "insert_line_correction",
     "list_line_corrections_by_line_item_id",
 ]
-

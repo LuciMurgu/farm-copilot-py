@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 16 — integration tests — FUNCTIONALLY COMPLETE)
+2026-04-04 (Prompt 17 — ANAF token management)
 
 ---
 
@@ -137,7 +137,19 @@ Update this file at the end of every meaningful session.
 | Stock-in | `tests/integration/test_stock_in_integration.py` — 5 scenarios (create, idempotent, gate, service skip, no product) |
 | Normalization | `tests/integration/test_normalization_integration.py` — 3 scenarios (winner, unmatched, ambiguous) |
 | Pipeline | `tests/integration/test_pipeline_integration.py` — 3 scenarios (E2E XML, not_found, unsupported_source) |
-| **Total** | **236 unit + 11 integration (skipped without DATABASE_URL)** |
+| **Total** | **247 unit + 11 integration (skipped without DATABASE_URL)** |
+
+### ANAF token management
+
+| Item | Status |
+|------|--------|
+| AnafToken model | `database/models.py` — encrypted token storage, 1 per farm (unique constraint) |
+| Alembic migration | `migrations/versions/fd3136f80cc4` — anaf_tokens table |
+| Encryption module | `database/encryption.py` — Fernet symmetric, key from ANAF_ENCRYPTION_KEY env var |
+| Token CRUD | `database/anaf_tokens.py` — 6 functions (upsert, get, decrypt, refresh, delete, needs_refresh) |
+| Encryption tests | `tests/domain/test_encryption.py` — 5 tests |
+| Refresh logic tests | `tests/test_anaf_tokens.py` — 6 tests |
+| cryptography dep | `pyproject.toml` — cryptography>=44.0 |
 
 ---
 
@@ -171,6 +183,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 17** — Visual polish + UI enhancements
-2. **Prompt 18** — Pilot deployment prep (Docker, env config)
-3. **Prompt 19** — Additional pipeline features (fuzzy normalization)
+1. **Prompt 18** — ANAF SPV API client (OAuth2 flow, invoice download)
+2. **Prompt 19** — Pilot deployment prep (Docker, env config)
+3. **Prompt 20** — Additional pipeline features (fuzzy normalization)

@@ -89,3 +89,10 @@ Copy and fill in when adding a new decision:
 - **Reason:** No cleanup needed, tests don't interfere, DB is unchanged after tests run. Simpler than commit + cleanup approach.
 - **Alternatives rejected:** Committed transactions + explicit cleanup (more complex, risk of leftover data), separate test databases per test (resource-heavy).
 
+### DEC-0010 — ANAF tokens encrypted at rest using Fernet symmetric encryption
+
+- **Date:** 2026-04-04
+- **Decision:** ANAF OAuth2 tokens (access_token, refresh_token, client_secret) are encrypted at rest using Fernet symmetric encryption. Key loaded from `ANAF_ENCRYPTION_KEY` env var. One token per farm (unique constraint on farm_id). Proactive refresh at 70% of access token lifetime.
+- **Reason:** ANAF tokens are fiscal credentials — a leaked token pair exposes all invoice data for the farm. Fernet provides authenticated encryption (AES-128-CBC + HMAC-SHA256). 70% threshold prevents token expiry during active API calls.
+- **Alternatives rejected:** Asymmetric encryption (unnecessary complexity for at-rest encryption), vault-based storage (overkill for pilot), no encryption (unacceptable security risk).
+
