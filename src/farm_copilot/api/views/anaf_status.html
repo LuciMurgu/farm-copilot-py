@@ -83,6 +83,25 @@
     </div>
 </div>
 
+{# Auto-sync info #}
+<div class="card">
+    <h3>⏱️ Auto-Sync</h3>
+    <div class="grid-2 text-sm">
+        <div>
+            <span class="text-muted">Status:</span>
+            {% if sync_enabled %}
+                <span class="badge badge-success">Enabled</span>
+            {% else %}
+                <span class="badge badge-muted">Disabled</span>
+            {% endif %}
+        </div>
+        <div>
+            <span class="text-muted">Interval:</span>
+            Every {{ sync_interval_hours }} hours
+        </div>
+    </div>
+</div>
+
 {# Action buttons #}
 <div style="display:flex; gap:0.75rem; margin-bottom:1.5rem;">
     <form action="/anaf/sync/{{ farm_id }}" method="post" style="margin:0;">

@@ -124,3 +124,9 @@ Copy and fill in when adding a new decision:
 - **Reason:** Alerts and explanations must survive server restarts to be useful in production. JSONB serialization at the persistence boundary preserves domain purity (typed evidence dataclasses in domain, untyped dicts in DB). Replace pattern ensures re-processing is idempotent without merge complexity.
 - **Alternatives rejected:** In-memory cache (volatile, doesn't survive restarts), upsert-by-key (complex merge logic for nested evidence), separate microservice (unnecessary for MVP).
 
+### DEC-0015 — Background ANAF sync uses asyncio.create_task within FastAPI lifespan
+
+- **Date:** 2026-04-04
+- **Decision:** Background ANAF sync uses `asyncio.create_task()` within FastAPI lifespan. No external scheduler dependency (no Celery, no APScheduler). Per-farm error isolation — one farm failing does not block others. Configurable via `ANAF_SYNC_ENABLED`, `ANAF_SYNC_INTERVAL_SECONDS`, `ANAF_SYNC_INITIAL_DELAY_SECONDS` env vars.
+- **Reason:** Keeps deployment simple (single process), avoids dependency on external job schedulers, and leverages the existing asyncio event loop. The 4-hour default interval matches ANAF's typical invoice posting cadence.
+- **Alternatives rejected:** Celery (too heavy for single-farm MVP), APScheduler (unnecessary dependency), cron (external configuration, no error isolation), manual-only sync (defeats zero-data-entry goal).

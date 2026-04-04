@@ -11,7 +11,7 @@ Update this file at the end of every meaningful session.
 
 ## Last updated
 
-2026-04-04 (Prompt 21 — Alert + explanation persistence)
+2026-04-04 (Prompt 22 — Scheduled auto-sync background job)
 
 ---
 
@@ -198,7 +198,21 @@ Update this file at the end of every meaningful session.
 | Invoice detail route | Reads alerts/explanations from DB, not cache |
 | result_cache.py | **DELETED** — zero ephemeral state |
 | Tests | 7 serialization tests |
-| **Total** | **286 unit + 11 integration (skipped without DATABASE_URL)** |
+| **Total** | **293 unit + 11 integration (skipped without DATABASE_URL)** |
+
+### Scheduled auto-sync
+
+> Farmers with active ANAF tokens receive automatic invoice ingestion every 4 hours (configurable). Manual "Sync Now" button still available as override. Per-farm error isolation — one farm failing does not block others.
+
+| Item | Status |
+|------|--------|
+| `worker/scheduler.py` | Background loop + per-farm sync |
+| `list_all_active_tokens` | `database/anaf_tokens.py` — excludes expired |
+| FastAPI lifespan | `api/app.py` — start/stop scheduler |
+| `api/logging_config.py` | Structured logging, quiet noisy loggers |
+| Auto-sync card | `anaf_status.html` — shows enabled/interval |
+| Env config | `ANAF_SYNC_ENABLED`, `ANAF_SYNC_INTERVAL_SECONDS`, `ANAF_SYNC_INITIAL_DELAY_SECONDS` |
+| Tests | 7 scheduler tests |
 
 ---
 
@@ -217,6 +231,6 @@ Update this file at the end of every meaningful session.
 
 ## Next likely work
 
-1. **Prompt 22** — Pilot deployment prep (Docker, env config)
-2. **Prompt 23** — Additional pipeline features (fuzzy normalization)
-3. **Prompt 24** — Authentication + multi-farm support
+1. **Prompt 23** — Additional pipeline features (fuzzy normalization)
+2. **Prompt 24** — Authentication + multi-farm support
+3. **Prompt 25** — Pilot deployment prep (Docker, env config)

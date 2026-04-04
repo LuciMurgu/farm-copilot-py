@@ -194,3 +194,20 @@ async def needs_refresh(
 
     elapsed = (now - issued_at).total_seconds()
     return elapsed / total_lifetime > 0.7
+
+
+async def list_all_active_tokens(
+    session: AsyncSession,
+) -> list[AnafToken]:
+    """List all ANAF tokens with non-expired refresh tokens.
+
+    Used by the scheduler to find farms that need syncing.
+    Farms whose refresh tokens have expired are excluded —
+    they need to re-authorize with their USB certificate.
+    """
+    now = datetime.now(tz=UTC)
+    stmt = select(AnafToken).where(
+        AnafToken.refresh_token_expires_at > now
+    )
+    result = await session.execute(stmt)
+    return list(result.scalars().all())

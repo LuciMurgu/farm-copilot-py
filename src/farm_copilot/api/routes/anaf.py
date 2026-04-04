@@ -27,6 +27,7 @@ from farm_copilot.worker.anaf_client import (
     AnafClientConfig,
 )
 from farm_copilot.worker.anaf_sync import run_anaf_sync
+from farm_copilot.worker.scheduler import scheduler_settings
 
 router = APIRouter(prefix="/anaf", tags=["anaf"])
 
@@ -58,6 +59,10 @@ async def anaf_status(
         "connected": token is not None,
         "flash_msg": msg,
         "flash_type": msg_type or "info",
+        "sync_enabled": scheduler_settings.anaf_sync_enabled,
+        "sync_interval_hours": (
+            scheduler_settings.anaf_sync_interval_seconds // 3600
+        ),
     }
 
     if token is not None:
