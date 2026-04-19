@@ -33,6 +33,8 @@ services:
       ANAF_TEST_MODE: ${ANAF_TEST_MODE:-true}
       ANAF_SYNC_ENABLED: ${ANAF_SYNC_ENABLED:-true}
       ANAF_SYNC_INTERVAL_SECONDS: ${ANAF_SYNC_INTERVAL_SECONDS:-14400}
+      SESSION_SECRET_KEY: ${SESSION_SECRET_KEY}
+      FRONTEND_URL: ${FRONTEND_URL:-}
       ENV: production
       TRANSFORMERS_CACHE: /app/.cache/transformers
     volumes:
